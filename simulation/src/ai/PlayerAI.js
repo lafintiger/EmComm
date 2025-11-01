@@ -122,9 +122,9 @@ export class PlayerAI {
   }
 
   deliverCriticalItem() {
-    // Find who needs what I have
+    // Find who needs what I have (check role.needs)
     const recipient = this.gameState.roles.find(r => 
-      (r.needsItem === this.role.has || r.needsService === this.role.has) &&
+      r.needs === this.role.has &&
       r.needsCriticalFirstRound &&
       !r.objectiveComplete
     );
@@ -176,8 +176,9 @@ export class PlayerAI {
         priority: this.role.needsCriticalFirstRound ? 'urgent' : 'routine'
       };
     } else {
-      // Need an item - find who has it
-      const provider = this.gameState.roles.find(r => r.has === this.role.needsItem);
+      // Need an item - find who has it (use role.needs for item name)
+      const itemNeeded = this.role.needs;
+      const provider = this.gameState.roles.find(r => r.has === itemNeeded);
       
       if (!provider) return null;
 
@@ -188,8 +189,8 @@ export class PlayerAI {
         return {
           type: 'receive_item',
           provider: provider.id,
-          item: this.role.needsItem,
-          message: `${provider.name}, requesting ${this.role.needsItem}`
+          item: itemNeeded,
+          message: `${provider.name}, requesting ${itemNeeded}`
         };
       }
 
@@ -197,7 +198,7 @@ export class PlayerAI {
       return {
         type: 'communicate',
         subtype: 'query',
-        message: `This is ${this.role.name}, looking for ${provider.name} with ${this.role.needsItem}. What's your location?`,
+        message: `This is ${this.role.name}, looking for ${provider.name} with ${itemNeeded}. What's your location?`,
         priority: 'routine'
       };
     }
@@ -225,9 +226,9 @@ export class PlayerAI {
   }
 
   deliverItem() {
-    // Find who needs what I have
+    // Find who needs what I have (check role.needs for items)
     const recipient = this.gameState.roles.find(r => 
-      r.needsItem === this.role.has && !r.objectiveComplete
+      r.needsType === 'item' && r.needs === this.role.has && !r.objectiveComplete
     );
 
     if (!recipient) {

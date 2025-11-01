@@ -32,19 +32,20 @@ function DebugPanel({ roles, eventLog }) {
             });
           }
         } else {
-          // Needs an item
-          const provider = roles.find(r => r.has === role.needsItem);
+          // Needs an item (use role.needs for item name)
+          const itemNeeded = role.needs;
+          const provider = roles.find(r => r.has === itemNeeded);
           
           if (!provider) {
             problems.push({
               player: role.name,
-              issue: `CRITICAL: Needs ${role.needsItem} but no one has it!`,
+              issue: `CRITICAL: Needs ${itemNeeded} but no one has it!`,
               severity: 'critical'
             });
           } else if (!provider.itemDelivered) {
             problems.push({
               player: role.name,
-              issue: `Waiting for ${provider.name} to deliver ${role.needsItem}. Provider at Location ${provider.currentLocation}`,
+              issue: `Waiting for ${provider.name} to deliver ${itemNeeded}. Provider at Location ${provider.currentLocation}`,
               severity: 'warning'
             });
           }
@@ -52,7 +53,7 @@ function DebugPanel({ roles, eventLog }) {
       }
 
       if (role.has && !role.has.includes('Skills') && !role.itemDelivered) {
-        const recipient = roles.find(r => r.needsItem === role.has);
+        const recipient = roles.find(r => r.needsType === 'item' && r.needs === role.has);
         
         if (!recipient) {
           problems.push({
@@ -116,7 +117,8 @@ function DebugPanel({ roles, eventLog }) {
                   <div className="role-debug-info">
                     <div>Location: {role.currentLocation}</div>
                     <div>Has: {role.has || 'Nothing'}</div>
-                    <div>Needs: {role.needsItem || role.needsService || 'Nothing'}</div>
+                    <div>Needs: {role.needsType === 'service' ? role.needsService : role.needs}</div>
+                    <div>Type: {role.needsType}</div>
                     <div>Objective: {role.objectiveComplete ? '✅' : '❌'}</div>
                     <div>Delivered: {role.has && !role.has.includes('Skills') ? (role.itemDelivered ? '✅' : '❌') : 'N/A'}</div>
                   </div>
