@@ -68,6 +68,39 @@ function RefereeChecklist({ onBack }) {
       </section>
 
       <section className="guide-section">
+        <h3>📻 Net Control Operator (NCO) Communication Log</h3>
+        <p>
+          <strong>Critical Tool:</strong> The NCO must maintain a Radio Communications Log during each round. 
+          This is based on the ICS-217A form used in real emergency operations.
+        </p>
+
+        <div className="nco-log-info">
+          <h4>NCO Responsibilities:</h4>
+          <ol>
+            <li><strong>Record Every Transmission:</strong> Time, From, To, Message, Priority</li>
+            <li><strong>Prioritize Traffic:</strong> Emergency (E), Urgent (U), Routine (R)</li>
+            <li><strong>Maintain Net Discipline:</strong> Control who speaks when</li>
+            <li><strong>Direct Communications:</strong> Route messages to appropriate stations</li>
+            <li><strong>Close the Net:</strong> Properly end operations each round</li>
+          </ol>
+
+          <h4>Why the Log Matters:</h4>
+          <ul>
+            <li>✓ Official record of all communications</li>
+            <li>✓ Helps track what information was shared</li>
+            <li>✓ Shows decision-making timeline</li>
+            <li>✓ Used for after-action review</li>
+            <li>✓ Mimics real emergency operations procedures</li>
+          </ul>
+
+          <div className="nco-note">
+            <strong>📋 Note:</strong> The Radio Communications Log is included in the printable materials. 
+            Print one copy for EACH round (3 total), as a new NCO takes over each round.
+          </div>
+        </div>
+      </section>
+
+      <section className="guide-section">
         <h3>During Game: Observation Points</h3>
         
         <div className="observation-category">

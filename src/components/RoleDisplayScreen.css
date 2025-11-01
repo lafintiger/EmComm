@@ -427,6 +427,108 @@
     margin-bottom: 0.5rem;
   }
 
+  /* Radio Communications Log */
+  .log-subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .log-header-info {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .log-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .log-info-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .log-instructions {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .comms-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+
+  .comms-log-table thead {
+    background: #1f2937;
+    color: white;
+  }
+
+  .comms-log-table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid #374151;
+  }
+
+  .comms-log-table td {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    font-size: 0.85rem;
+  }
+
+  .comms-log-table tbody tr:nth-child(even) {
+    background: #f9fafb;
+  }
+
+  .log-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+  }
+
+  .log-footer-section h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    font-size: 1rem;
+  }
+
+  .log-footer-section ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .log-footer-section li {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .log-signature {
+    border-top: 2px solid #d1d5db;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+
+  .log-signature p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
   /* Tear-off section */
   .tear-off-section {
     margin-top: 1rem;

@@ -298,6 +298,78 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
               <li><strong>Infractions:</strong> -5 points each (missed protocol, confusion)</li>
             </ul>
           </div>
+
+          {/* Radio Communications Log - Net Control Operator */}
+          <div className="print-protocol page-break">
+            <h1>📻 Radio Communications Log</h1>
+            <p className="log-subtitle"><strong>For Net Control Operator Use</strong> | Based on ICS-217A Radio Communications Log</p>
+            
+            <div className="log-header-info">
+              <div className="log-info-row">
+                <span><strong>Incident/Exercise:</strong> Emergency Radio Coordination Game</span>
+                <span><strong>Date:</strong> _____________</span>
+              </div>
+              <div className="log-info-row">
+                <span><strong>Net Control Operator:</strong> _________________________</span>
+                <span><strong>Operational Period:</strong> Round _____ of 3</span>
+              </div>
+            </div>
+
+            <p className="log-instructions">
+              <strong>NCO Instructions:</strong> Record ALL radio traffic. Include time, who transmitted, who received, 
+              and brief message content. This log serves as the official record of communications.
+            </p>
+
+            <table className="comms-log-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '10%' }}>Time</th>
+                  <th style={{ width: '20%' }}>From (Call Sign)</th>
+                  <th style={{ width: '20%' }}>To (Call Sign)</th>
+                  <th style={{ width: '40%' }}>Message Content</th>
+                  <th style={{ width: '10%' }}>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(20)].map((_, i) => (
+                  <tr key={i}>
+                    <td>_____</td>
+                    <td>_______________</td>
+                    <td>_______________</td>
+                    <td>_________________________________</td>
+                    <td>_____</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="log-footer">
+              <div className="log-footer-section">
+                <h4>Priority Codes:</h4>
+                <ul>
+                  <li><strong>E</strong> - Emergency (immediate threat to life)</li>
+                  <li><strong>U</strong> - Urgent (time-sensitive)</li>
+                  <li><strong>R</strong> - Routine (normal traffic)</li>
+                </ul>
+              </div>
+
+              <div className="log-footer-section">
+                <h4>NCO Duties Checklist:</h4>
+                <ul>
+                  <li>☐ Established net and announced operational period</li>
+                  <li>☐ Verified all stations checked in</li>
+                  <li>☐ Directed traffic and maintained discipline</li>
+                  <li>☐ Prioritized emergency messages</li>
+                  <li>☐ Logged all communications accurately</li>
+                  <li>☐ Closed net properly at end of round</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="log-signature">
+              <p><strong>Prepared by (NCO):</strong> _________________________ <strong>Signature:</strong> _________________ <strong>Time:</strong> _______</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
