@@ -15,9 +15,11 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
       id: role.id,
       completedObjective: false,  // Found what/who they need
       deliveredItem: false,         // If they have an item, did they deliver it to someone who needs it
-      currentLocation: role.location
+      currentLocation: role.location,
+      hasBeenNCC: false            // Track if they've been Net Control
     }))
   );
+  const [currentNCC, setCurrentNCC] = useState(null); // Current Net Control Operator
   const [scores, setScores] = useState({
     completionTime: 0,
     radioDiscipline: 0,
@@ -85,8 +87,26 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
   };
 
   const nextRound = () => {
+    clearNetControl();
     setCurrentRound(prev => prev + 1);
     logEvent(`Round ${currentRound + 1} started`, 'info');
+  };
+
+  const assignNetControl = (playerId) => {
+    const player = gameData.roles.find(r => r.id === playerId);
+    setCurrentNCC(playerId);
+    setPlayerStatuses(prev => prev.map(p => 
+      p.id === playerId ? { ...p, hasBeenNCC: true } : p
+    ));
+    logEvent(`${player.name} assigned as Net Control for Round ${currentRound}`, 'ncc');
+  };
+
+  const clearNetControl = () => {
+    if (currentNCC) {
+      const player = gameData.roles.find(r => r.id === currentNCC);
+      logEvent(`${player.name} released from Net Control duty`, 'ncc');
+    }
+    setCurrentNCC(null);
   };
 
   const calculateProgress = () => {
@@ -185,6 +205,68 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
           </div>
         </div>
 
+        {/* Net Control Operator Assignment */}
+        <div className="ncc-panel card">
+          <h2>
+            📻 Net Control Operator - Round {currentRound}
+          </h2>
+          <p className="ncc-instructions">
+            Assign a player who is physically at a location. They must stay at their location for this round. 
+            Cannot assign someone who has already been Net Control.
+          </p>
+          
+          {currentNCC ? (
+            <div className="ncc-current">
+              <div className="ncc-assigned-info">
+                <strong>{gameData.roles.find(r => r.id === currentNCC)?.name}</strong>
+                <span className="ncc-location">
+                  @ Location {playerStatuses.find(p => p.id === currentNCC)?.currentLocation}
+                </span>
+              </div>
+              <button className="btn btn-warning btn-sm" onClick={clearNetControl}>
+                Change NCC
+              </button>
+            </div>
+          ) : (
+            <div className="ncc-selection">
+              <select 
+                className="ncc-dropdown"
+                onChange={(e) => e.target.value && assignNetControl(parseInt(e.target.value))}
+                value=""
+              >
+                <option value="">Select Net Control Operator...</option>
+                {gameData.roles.map((role) => {
+                  const status = playerStatuses.find(p => p.id === role.id);
+                  const hasBeenNCC = status.hasBeenNCC;
+                  return (
+                    <option 
+                      key={role.id} 
+                      value={role.id}
+                      disabled={hasBeenNCC}
+                    >
+                      {role.name} ({role.profession}) - Location {status.currentLocation}
+                      {hasBeenNCC ? ' - Already served as NCC' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
+
+          <div className="round-controls">
+            <button 
+              className="btn btn-primary"
+              onClick={nextRound}
+              disabled={currentRound >= 3 || !currentNCC}
+            >
+              Advance to Round {currentRound + 1}
+            </button>
+            {!currentNCC && (
+              <p className="warning-text">⚠️ Must assign Net Control before advancing</p>
+            )}
+          </div>
+        </div>
+
         <div className="session-grid">
           {/* Player Tracking */}
           <div className="players-panel card">
@@ -197,11 +279,17 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
               {gameData.roles.map((role) => {
                 const status = playerStatuses.find(p => p.id === role.id);
                 return (
-                  <div key={role.id} className="player-item">
+                  <div key={role.id} className={`player-item ${currentNCC === role.id ? 'is-ncc' : ''}`}>
                     <div className="player-header">
                       <div className="player-info">
                         <strong>{role.name}</strong>
                         <span className="player-profession">{role.profession}</span>
+                        {currentNCC === role.id && (
+                          <span className="ncc-indicator">📻 NET CONTROL</span>
+                        )}
+                        {role.isCriticalFirstRound && (
+                          <span className="critical-indicator">⚠️ CRITICAL</span>
+                        )}
                       </div>
                       <div 
                         className="player-location" 
@@ -242,21 +330,15 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
                         </label>
                       )}
 
-                      {role.alsoNeeds && role.alsoNeeds.length > 0 && (
+                      {role.relationship && (
                         <div className="dilemma-indicator">
                           <AlertTriangle size={14} style={{ color: '#ef4444' }} />
                           <span style={{ fontSize: '0.875rem', color: '#ef4444', fontWeight: 500 }}>
-                            Strategic Dilemma:
+                            Personal Dilemma:
                           </span>
-                          {role.alsoNeeds.map((also, index) => (
-                            <div key={index} style={{ fontSize: '0.75rem', marginLeft: '1.5rem', color: '#6b7280' }}>
-                              {also.type === 'relationship' ? (
-                                <>💔 {also.description}</>
-                              ) : (
-                                <>• {also.service} ({also.profession})</>
-                              )}
-                            </div>
-                          ))}
+                          <div style={{ fontSize: '0.75rem', marginLeft: '1.5rem', color: '#6b7280' }}>
+                            💔 {role.relationship.description} ({role.relationship.partnerName} @ Location {role.relationship.partnerLocation})
+                          </div>
                         </div>
                       )}
                     </div>
@@ -272,10 +354,14 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
                             borderColor: getLocationColor(loc)
                           }}
                           onClick={() => movePlayer(role.id, loc)}
+                          disabled={currentNCC === role.id}
                         >
                           {loc}
                         </button>
                       ))}
+                      {currentNCC === role.id && (
+                        <span className="ncc-note">Cannot move - serving as Net Control</span>
+                      )}
                     </div>
 
                     {role.priority === 'high' && (
@@ -371,14 +457,6 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
                   ))
                 )}
               </div>
-            </div>
-
-            {/* Round Control */}
-            <div className="card round-control">
-              <button className="btn btn-secondary" onClick={nextRound} style={{ width: '100%' }}>
-                <RotateCcw size={20} />
-                Next Round
-              </button>
             </div>
           </div>
         </div>

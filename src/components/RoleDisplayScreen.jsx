@@ -1,42 +1,14 @@
 import { useState } from 'react';
-import { ChevronLeft, Play, Printer, Download, Eye, EyeOff, Radio } from 'lucide-react';
+import { ChevronLeft, Play, Printer, Download, Eye, EyeOff } from 'lucide-react';
 import { getNeedsDescription, getServiceProvider } from '../utils/roleGenerator';
 import './RoleDisplayScreen.css';
 
 function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
   const [hideRoles, setHideRoles] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
-  const [nccAssignments, setNccAssignments] = useState({ round1: null, round2: null, round3: null });
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const assignNCC = (round, roleId) => {
-    setNccAssignments({
-      ...nccAssignments,
-      [`round${round}`]: roleId
-    });
-    
-    // Update the role object
-    roles.forEach(role => {
-      if (role.id === roleId) {
-        role.nccRound = round;
-      } else if (role.nccRound === round) {
-        role.nccRound = null; // Remove previous assignment for this round
-      }
-    });
-  };
-
-  const isAssignedNCC = (roleId) => {
-    return Object.values(nccAssignments).includes(roleId);
-  };
-
-  const getNccRound = (roleId) => {
-    if (nccAssignments.round1 === roleId) return 1;
-    if (nccAssignments.round2 === roleId) return 2;
-    if (nccAssignments.round3 === roleId) return 3;
-    return null;
   };
 
   const getLocationColor = (location) => {
@@ -111,44 +83,6 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
           </div>
         </div>
 
-        {/* Net Control Operator Assignment */}
-        <div className="ncc-assignment card fade-in no-print">
-          <h2><Radio size={24} /> Assign Net Control Operators</h2>
-          <p className="ncc-description">
-            Organizers: Select which player will be Net Control for each round. 
-            They must stay at their location during their assigned round.
-          </p>
-          
-          <div className="ncc-rounds">
-            {[1, 2, 3].map(round => (
-              <div key={round} className="ncc-round">
-                <h4>Round {round} Net Control</h4>
-                <select 
-                  value={nccAssignments[`round${round}`] || ''} 
-                  onChange={(e) => assignNCC(round, parseInt(e.target.value))}
-                  className="ncc-select"
-                >
-                  <option value="">Select Player...</option>
-                  {roles.map(role => (
-                    <option 
-                      key={role.id} 
-                      value={role.id}
-                      disabled={isAssignedNCC(role.id) && getNccRound(role.id) !== round}
-                    >
-                      {role.name} ({role.profession}) - Location {role.location}
-                    </option>
-                  ))}
-                </select>
-                {nccAssignments[`round${round}`] && (
-                  <div className="ncc-assigned">
-                    ✓ Assigned: {roles.find(r => r.id === nccAssignments[`round${round}`])?.name}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Role Cards Grid */}
         {!hideRoles && (
           <div className="roles-grid">
@@ -162,9 +96,6 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
                   <div className="role-title">
                     <h3>{role.name}</h3>
                     <span className="role-profession">{role.profession}</span>
-                    {getNccRound(role.id) && (
-                      <span className="ncc-badge">📻 NCC Round {getNccRound(role.id)}</span>
-                    )}
                   </div>
                   <div className="location-badge" style={{ backgroundColor: getLocationColor(role.location) }}>
                     Location {role.location}
