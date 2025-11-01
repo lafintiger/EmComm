@@ -5,6 +5,7 @@ import LocationView from './components/LocationView';
 import RadioFeed from './components/RadioFeed';
 import StatsPanel from './components/StatsPanel';
 import ControlPanel from './components/ControlPanel';
+import DebugPanel from './components/DebugPanel';
 import { generateRoles, generateScenario } from '../../src/utils/roleGenerator.js';
 import './SimulatorApp.css';
 
@@ -258,6 +259,11 @@ function SimulatorApp() {
             isComplete={gameState === 'complete'}
           />
         </div>
+
+        <DebugPanel 
+          roles={simulationState.roles} 
+          eventLog={simulationState.eventLog}
+        />
 
         <div className="sim-grid">
           <div className="locations-column">

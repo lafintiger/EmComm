@@ -336,15 +336,22 @@ function assignWhatPeopleNeed(roles, usedItems) {
         role.needs = provider.profession;
         role.needsType = 'service';
         role.needsService = specificNeed;
+        role.needsItem = null; // Not needing an item
       } else {
         // Fallback to item
-        role.needs = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+        const item = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+        role.needs = item;
         role.needsType = 'item';
+        role.needsItem = item;
+        role.needsService = null;
       }
     } else {
       // Need an item at a DIFFERENT location from both role and relationship
-      role.needs = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+      const item = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+      role.needs = item;
       role.needsType = 'item';
+      role.needsItem = item;
+      role.needsService = null;
     }
   });
   
@@ -403,6 +410,7 @@ function assignCriticalFirstRoundNeeds(roles) {
       player.needs = provider.profession;
       player.needsType = 'service';
       player.needsService = CRITICAL_FIRST_ROUND_SKILLS[provider.profession];
+      player.needsItem = null;
       player.needsCriticalFirstRound = true;
     }
   }
