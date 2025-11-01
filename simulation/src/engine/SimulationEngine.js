@@ -67,15 +67,42 @@ export class SimulationEngine {
   processTurn() {
     this.turnNumber++;
     
-    // Decrement time (each turn = ~10 seconds of game time)
-    if (!this.isTransportPhase) {
-      this.roundTimeRemaining -= 10;
-      this.totalElapsedTime += 10;
-
-      if (this.roundTimeRemaining <= 0) {
-        this.enterTransportPhase();
-        return true;
+    // Safety check - prevent infinite loops (max ~30 minutes of game time at 10 seconds/turn)
+    const MAX_TURNS = 200;
+    if (this.turnNumber >= MAX_TURNS) {
+      this.logEvent('⏰ Maximum turns reached - ending simulation', 'complete');
+      this.currentRound = 4; // Force completion
+      return false;
+    }
+    
+    // Handle transport phase - just wait a few turns then exit
+    if (this.isTransportPhase) {
+      if (!this.transportTurnsRemaining) {
+        this.transportTurnsRemaining = 5; // Wait 5 turns in transport
       }
+      
+      this.transportTurnsRemaining--;
+      
+      if (this.transportTurnsRemaining <= 0) {
+        this.exitTransportPhase();
+        this.transportTurnsRemaining = null;
+      }
+      
+      // Check if game is complete after transport
+      if (this.isGameComplete()) {
+        return false;
+      }
+      
+      return true; // Continue simulation
+    }
+    
+    // Decrement time (each turn = ~10 seconds of game time)
+    this.roundTimeRemaining -= 10;
+    this.totalElapsedTime += 10;
+
+    if (this.roundTimeRemaining <= 0) {
+      this.enterTransportPhase();
+      return true;
     }
 
     // Each AI player gets to act (except Net Control who manages, not acts individually)
@@ -354,6 +381,8 @@ export class SimulationEngine {
       this.scores.decisionQuality += 3;
     }
 
+    this.logEvent(`✅ Transport complete for Round ${this.currentRound}`, 'transport');
+
     // Advance to next round
     if (this.currentRound < 3) {
       this.currentRound++;
@@ -361,6 +390,10 @@ export class SimulationEngine {
       this.assignNetControl();
       this.logEvent(`⏭️ Starting Round ${this.currentRound}`, 'round');
       this.logEvent(`📻 ${this.roles.find(r => r.id === this.currentNCC).name} assigned as Net Control for Round ${this.currentRound}`, 'ncc');
+    } else {
+      // Just finished round 3 transport
+      this.currentRound = 4; // This will trigger game completion
+      this.logEvent(`🏁 All rounds complete!`, 'complete');
     }
   }
 
@@ -385,15 +418,20 @@ export class SimulationEngine {
   isGameComplete() {
     // Game complete when all objectives done
     const allObjectives = this.roles.every(r => r.objectiveComplete);
-    const allDeliveries = this.roles.every(r => !r.has || r.itemDelivered);
+    const allDeliveries = this.roles.every(r => {
+      // If role has no item (is a skill provider), no delivery needed
+      if (!r.has || r.has.includes('Skills')) return true;
+      // Otherwise check if delivered
+      return r.itemDelivered;
+    });
     
     if (allObjectives && allDeliveries) {
       this.logEvent('🎉 All objectives complete! Game finished!', 'complete');
       return true;
     }
 
-    // Or when we've finished round 3
-    if (this.currentRound > 3 && !this.isTransportPhase) {
+    // Or when we've finished round 3 transport phase
+    if (this.currentRound > 3) {
       this.logEvent('⏰ Round 3 complete - Game finished!', 'complete');
       return true;
     }

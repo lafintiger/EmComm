@@ -52,15 +52,6 @@ function SimulatorApp() {
           setGameState('complete');
           clearInterval(intervalRef.current);
         }
-
-        // Handle transport phase
-        if (engine.isTransportPhase && !engine.transportProcessed) {
-          engine.transportProcessed = true;
-          setTimeout(() => {
-            engine.exitTransportPhase();
-            engine.transportProcessed = false;
-          }, speed * 5); // Transport phase lasts 5 turns
-        }
       }, speed);
 
       return () => {
