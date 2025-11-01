@@ -22,6 +22,10 @@ function CommunicationsGuide({ onBack }) {
       <div className="guide-header">
         <h1>Radio Communication Protocol Guide</h1>
         <h2>Emergency Radio Coordination Game</h2>
+        <p className="standards-note">
+          <strong>📡 Based on Real-World Standards:</strong> These protocols are adapted from FEMA CERT Emergency Communications, 
+          ARRL Amateur Radio Emergency Service (ARES), and ICS (Incident Command System) radio procedures.
+        </p>
       </div>
 
       <section className="guide-section">
@@ -348,9 +352,101 @@ function CommunicationsGuide({ onBack }) {
         </div>
       </section>
 
+      <section className="guide-section citations-section">
+        <h3>📚 Sources & Standards</h3>
+        <p>
+          <strong>These protocols are based on established emergency communication standards:</strong>
+        </p>
+
+        <div className="citation-block">
+          <h4>1. FEMA Community Emergency Response Team (CERT)</h4>
+          <ul className="citations-list">
+            <li>
+              <strong>CERT Emergency Communications Participant Manual</strong> (2015)
+              <br />
+              U.S. Department of Homeland Security / FEMA
+              <br />
+              <em>Defines Net Control Operator role as "radio traffic cop" who directs communications, 
+              prioritizes messages, and maintains discipline in controlled nets.</em>
+              <br />
+              Source: <a href="https://www.ready.gov/sites/default/files/2020-08/cert_emergencycommunications_pm_100615.pdf" 
+                         target="_blank" rel="noopener noreferrer">ready.gov/CERT Communications Manual</a>
+            </li>
+            <li>
+              <strong>San Mateo County Fire - CERT Communications Guide</strong>
+              <br />
+              <em>Covers tactical call signs, pro-words, phonetic alphabet, and radio protocol procedures.</em>
+              <br />
+              Source: <a href="https://www.smcfire.org/wp-content/uploads/2021/03/CERT-Communications.pdf" 
+                         target="_blank" rel="noopener noreferrer">smcfire.org/CERT Communications</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="citation-block">
+          <h4>2. Amateur Radio Emergency Service (ARES)</h4>
+          <ul className="citations-list">
+            <li>
+              <strong>ARRL Field Resources Manual</strong>
+              <br />
+              American Radio Relay League (ARRL)
+              <br />
+              <em>Standard procedures for amateur radio emergency communications, including net operations and message handling.</em>
+            </li>
+            <li>
+              <strong>Net Control Station Training Manual</strong>
+              <br />
+              <em>Comprehensive guide for NCS operators covering responsibilities, characteristics, and procedures 
+              for managing emergency communication nets.</em>
+              <br />
+              Source: <a href="https://clatsopauxcomm.org/images/documents/net_control/Net-Control-Station-Training-Manual.pdf" 
+                         target="_blank" rel="noopener noreferrer">Net Control Training Manual</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="citation-block">
+          <h4>3. Incident Command System (ICS)</h4>
+          <ul className="citations-list">
+            <li>
+              <strong>ICS-205: Incident Radio Communications Plan</strong>
+              <br />
+              FEMA National Incident Management System (NIMS)
+              <br />
+              <em>Standard form for documenting radio communications plans in emergency incidents.</em>
+            </li>
+            <li>
+              <strong>ICS-213: General Message Form</strong>
+              <br />
+              <em>Standard format for recording and transmitting messages during emergency operations.</em>
+            </li>
+          </ul>
+        </div>
+
+        <div className="citation-block">
+          <h4>4. Radiotelephony Procedures</h4>
+          <ul className="citations-list">
+            <li>
+              <strong>Standard Radiotelephony Procedures</strong>
+              <br />
+              <em>Internationally recognized procedures for radio communication, including pro-words and phonetic alphabet.</em>
+              <br />
+              Source: <a href="https://en.wikipedia.org/wiki/Radiotelephony_procedure" 
+                         target="_blank" rel="noopener noreferrer">Wikipedia: Radiotelephony Procedure</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="standards-note" style={{ marginTop: '1.5rem', padding: '1rem', background: '#f0f9ff' }}>
+          <strong>Note for Training:</strong> This game adapts these professional standards for educational purposes. 
+          Participants can choose simplified protocols for gameplay while learning the underlying principles. 
+          For actual emergency operations, consult your local CERT program or amateur radio club for specific procedures.
+        </div>
+      </section>
+
       <footer className="guide-footer">
         <p><strong>Radio Communication Protocol Guide</strong> | Emergency Radio Coordination Game</p>
-        <p>Based on FEMA ICS standards and ARRL emergency communication protocols</p>
+        <p>Based on FEMA CERT, ARRL ARES, and ICS emergency communication protocols</p>
       </footer>
     </div>
   );
