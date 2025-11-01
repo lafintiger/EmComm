@@ -152,6 +152,65 @@
   font-style: italic;
 }
 
+.resources-section {
+  margin-bottom: 2rem;
+}
+
+.resources-section h2 {
+  font-size: 1.75rem;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.resources-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.resource-card {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+  background: white;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+}
+
+.resource-icon {
+  color: #3b82f6;
+  margin-bottom: 0.75rem;
+}
+
+.resource-card h4 {
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.resource-card p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .welcome-header h1 {
     font-size: 2rem;
@@ -172,6 +231,10 @@
   
   .step-number {
     margin: 0 auto;
+  }
+
+  .resources-grid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,7 +1,7 @@
-import { Radio, Users, Target, Timer } from 'lucide-react';
+import { Radio, Users, Target, Timer, BookOpen, MessageSquare, ClipboardCheck } from 'lucide-react';
 import './WelcomeScreen.css';
 
-function WelcomeScreen({ onStart }) {
+function WelcomeScreen({ onStart, onGuide }) {
   return (
     <div className="welcome-screen">
       <div className="container">
@@ -76,6 +76,30 @@ function WelcomeScreen({ onStart }) {
                   <p>Find your targets, exchange supplies, and support your team</p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="resources-section card">
+            <h2>Game Resources</h2>
+            <p className="resources-subtitle">Print these guides before playing</p>
+            <div className="resources-grid">
+              <button className="resource-card" onClick={() => onGuide('game-guide')}>
+                <BookOpen size={32} className="resource-icon" />
+                <h4>Game Guide</h4>
+                <p>Complete instructions for players and facilitators</p>
+              </button>
+              
+              <button className="resource-card" onClick={() => onGuide('comms-guide')}>
+                <MessageSquare size={32} className="resource-icon" />
+                <h4>Radio Protocol Guide</h4>
+                <p>Communication procedures and examples</p>
+              </button>
+              
+              <button className="resource-card" onClick={() => onGuide('referee-checklist')}>
+                <ClipboardCheck size={32} className="resource-icon" />
+                <h4>Referee Checklist</h4>
+                <p>Scoring guide and observation sheets</p>
+              </button>
             </div>
           </div>
 

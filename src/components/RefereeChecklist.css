@@ -1,0 +1,330 @@
+@import './GameGuide.css';
+
+.checklist-box {
+  background-color: #f9fafb;
+  border: 2px solid #d1d5db;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.checklist-box h4 {
+  color: #1e40af;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.task-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.task-list li {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  border-left: 3px solid #6b7280;
+}
+
+.observation-category {
+  background-color: #eff6ff;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  border: 2px solid #3b82f6;
+  page-break-inside: avoid;
+}
+
+.observation-category h4 {
+  margin-top: 0;
+  color: #1e40af;
+}
+
+.observation-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background-color: white;
+}
+
+.observation-table th {
+  background-color: #1e40af;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.observation-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.observation-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.points-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.points-list li {
+  padding: 0.5rem 0;
+  margin: 0.25rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.location-sheet {
+  background-color: #fef3c7;
+  border: 3px solid #f59e0b;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  page-break-inside: avoid;
+}
+
+.location-sheet h4 {
+  margin-top: 0;
+  text-align: center;
+  color: #92400e;
+}
+
+.tracking-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin: 1rem 0;
+}
+
+.tracking-table th {
+  background-color: #92400e;
+  color: white;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.tracking-table td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.round-summary {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fefce8;
+  border-radius: 0.375rem;
+}
+
+.round-summary p {
+  margin: 0.5rem 0;
+}
+
+.infraction-tracking {
+  margin: 1rem 0;
+}
+
+.infraction-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.infraction-table th {
+  background-color: #dc2626;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.infraction-table td {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.infraction-table tbody tr:hover {
+  background-color: #fef2f2;
+}
+
+.completion-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.completion-table th {
+  background-color: #10b981;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.completion-table td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.notes-section {
+  margin: 1rem 0;
+}
+
+.note-box {
+  background-color: #fef3c7;
+  border: 2px dashed #f59e0b;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0.375rem;
+  page-break-inside: avoid;
+}
+
+.note-box p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.score-calc {
+  margin: 1.5rem 0;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.score-table th {
+  background-color: #1e40af;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.score-table td {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.score-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.negative-row {
+  background-color: #fef2f2 !important;
+}
+
+.total-row {
+  background-color: #dbeafe !important;
+  font-size: 1.1rem;
+}
+
+.total-row td {
+  border-top: 3px solid #1e40af !important;
+  padding: 1rem !important;
+}
+
+.scoring-guide {
+  background-color: #eff6ff;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+}
+
+.scoring-guide h4 {
+  margin-top: 0;
+  color: #1e40af;
+}
+
+.scoring-guide ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.debrief-questions {
+  background-color: #f0fdf4;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.debrief-questions h4 {
+  margin-top: 0;
+  color: #065f46;
+}
+
+.debrief-questions ol {
+  line-height: 1.8;
+}
+
+.key-takeaways {
+  background-color: #fef3c7;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.key-takeaways h4 {
+  margin-top: 0;
+  color: #92400e;
+}
+
+.tips-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.tips-box h4 {
+  margin-top: 0;
+}
+
+.tips-box ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.tips-box ul li {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  border-radius: 0.25rem;
+}
+
+.tips-box h4:first-child + ul li {
+  background-color: #d1fae5;
+  border-left: 3px solid #10b981;
+}
+
+.tips-box h4:last-of-type + ul li {
+  background-color: #fee2e2;
+  border-left: 3px solid #ef4444;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+@media print {
+  .checklist-box, .observation-category, .location-sheet, .note-box {
+    page-break-inside: avoid;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .score-calc {
+    page-break-inside: avoid;
+  }
+
+  @page {
+    margin: 0.5in;
+  }
+}
+
