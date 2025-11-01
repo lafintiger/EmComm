@@ -438,6 +438,191 @@ function RefereeChecklist({ onBack }) {
         </div>
       </section>
 
+      <section className="guide-section page-break">
+        <h3>🏁 Game Completion Verification</h3>
+        <p><strong>Use this checklist to verify ALL completion conditions are met for EVERY player</strong></p>
+        
+        <div className="verification-section">
+          <h4>STEP 1: Physical Item Verification ✅</h4>
+          <p><em>Walk around and check each player</em></p>
+          <table className="verification-table">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Needs (Item)</th>
+                <th>Has Torn-Off Paper? ✓</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td style={{ width: '80px' }}>□</td>
+                <td>_________________</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_________________</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_________________</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_________________</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_________________</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_________________</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="verification-section">
+          <h4>STEP 2: Physical Positioning Verification 🤝</h4>
+          <p><em>Check that people who need to find each other are standing together</em></p>
+          <table className="verification-table">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Needs to Find</th>
+                <th>Standing Together? ✓</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td style={{ width: '80px' }}>□</td>
+                <td>_____</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_____</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_____</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_____</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_____</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+                <td>_____</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="verification-section">
+          <h4>STEP 3: Service Signature Verification ✍️</h4>
+          <p><em>Check cards for specialist signatures</em></p>
+          <table className="verification-table">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Needs (Service)</th>
+                <th>Specialist Required</th>
+                <th>Has Signature? ✓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td style={{ width: '80px' }}>□</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+              </tr>
+              <tr>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>_________________</td>
+                <td>□</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="completion-checklist">
+          <h4>🎯 Final Completion Check:</h4>
+          <div style={{ fontSize: '1.1rem', lineHeight: '2' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+              <input type="checkbox" style={{ marginRight: '1rem', transform: 'scale(1.3)' }} />
+              <strong>ALL players have their needed item (torn-off paper)</strong>
+            </label>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+              <input type="checkbox" style={{ marginRight: '1rem', transform: 'scale(1.3)' }} />
+              <strong>ALL relationship pairs are standing together</strong>
+            </label>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+              <input type="checkbox" style={{ marginRight: '1rem', transform: 'scale(1.3)' }} />
+              <strong>ALL service recipients have specialist signatures</strong>
+            </label>
+          </div>
+          <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#dcfce7', border: '2px solid #16a34a', borderRadius: '0.5rem' }}>
+            <strong style={{ color: '#15803d', fontSize: '1.2rem' }}>✓ When ALL three boxes are checked, the game is COMPLETE!</strong>
+          </div>
+        </div>
+      </section>
+
       <section className="guide-section">
         <h3>Post-Game Debrief Guide</h3>
         

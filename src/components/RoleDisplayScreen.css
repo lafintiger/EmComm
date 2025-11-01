@@ -426,6 +426,82 @@
   .print-protocol li {
     margin-bottom: 0.5rem;
   }
+
+  /* Tear-off section */
+  .tear-off-section {
+    margin-top: 1rem;
+    page-break-inside: avoid;
+  }
+
+  .perforation-line {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #9ca3af;
+    letter-spacing: 0.1em;
+    border-top: 2px dashed #d1d5db;
+    border-bottom: 2px dashed #d1d5db;
+    padding: 0.25rem 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 10px,
+      #f3f4f6 10px,
+      #f3f4f6 12px
+    );
+  }
+
+  .tear-off-content {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .tear-off-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #d97706;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .tear-off-item {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: white;
+    border: 2px solid #f59e0b;
+    border-radius: 4px;
+  }
+
+  .tear-off-from {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0.5rem 0;
+  }
+
+  .tear-off-instructions {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .print-signature-box {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border: 2px dashed #9ca3af;
+    border-radius: 4px;
+  }
+
+  .signature-line {
+    margin: 0.75rem 0;
+    padding: 0.5rem 0;
+  }
 }
 
 @media (max-width: 768px) {

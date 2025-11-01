@@ -310,6 +310,64 @@
   page-break-before: always;
 }
 
+.verification-section {
+  margin-bottom: 2.5rem;
+}
+
+.verification-section h4 {
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+  font-size: 1.15rem;
+}
+
+.verification-section p {
+  color: #6b7280;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.verification-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.verification-table thead {
+  background: #f3f4f6;
+}
+
+.verification-table th,
+.verification-table td {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.verification-table th {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.verification-table td {
+  font-size: 0.9rem;
+}
+
+.completion-checklist {
+  background: #f9fafb;
+  border: 3px solid #16a34a;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+}
+
+.completion-checklist h4 {
+  color: #15803d;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
 @media print {
   .checklist-box, .observation-category, .location-sheet, .note-box {
     page-break-inside: avoid;

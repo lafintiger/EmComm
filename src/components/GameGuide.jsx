@@ -90,15 +90,42 @@ function GameGuide({ onBack }) {
           <li>⚡ <strong>Strategic dilemmas</strong> - Multiple urgent needs creating conflicts</li>
         </ul>
 
+        <h4>Physical Game Components</h4>
+        <div className="important-note">
+          <h4>📄 Tear-Off Item Cards</h4>
+          <p><strong>Each role card has a TEAR-OFF section at the bottom</strong> (marked with ✂️ scissors).</p>
+          <ul>
+            <li>If you have an <strong>ITEM</strong> (not a skill), tear off this section during the Transport Phase</li>
+            <li>Give it to the transport vehicle to deliver to the person who needs it</li>
+            <li>The item card shows: <strong>Item Name, From (your name), Instructions</strong></li>
+          </ul>
+
+          <h4>✍️ Service Signatures</h4>
+          <p>If you need a <strong>SERVICE</strong> from a specialist (Doctor, Mechanic, etc.):</p>
+          <ul>
+            <li>Your card has a <strong>Signature Line</strong></li>
+            <li>When the specialist provides the service, they <strong>SIGN your card</strong></li>
+            <li>This proves the service was completed</li>
+          </ul>
+
+          <h4>🤝 Physical Positioning</h4>
+          <p>If you need to find a <strong>PERSON</strong> (spouse, child, parent, etc.):</p>
+          <ul>
+            <li>You must physically <strong>STAND NEXT TO</strong> that person</li>
+            <li>Both of you stay together for the rest of the game</li>
+            <li>This visually shows the relationship has been reunited</li>
+          </ul>
+        </div>
+
         <h4>Basic Rules</h4>
         <ol>
           <li><strong>Communication:</strong> ALL communication must happen via radio using proper protocol</li>
           <li><strong>Movement:</strong> Players can move between locations at any time</li>
-          <li><strong>Exchanges:</strong> When two players meet in person, they can:
+          <li><strong>Exchanges During Transport Phase:</strong>
             <ul>
-              <li>Exchange items (physical cards or verbal confirmation)</li>
-              <li>Provide services (if they have the needed profession)</li>
-              <li>Share information about who/what is where</li>
+              <li><strong>ITEMS:</strong> Tear off item card and give to transport vehicle</li>
+              <li><strong>SERVICES:</strong> Specialist signs the card of person needing service</li>
+              <li><strong>RELATIONSHIPS:</strong> Stand next to your family member</li>
             </ul>
           </li>
           <li><strong>No Phones/Texts:</strong> Only radio communication allowed</li>
@@ -189,15 +216,44 @@ function GameGuide({ onBack }) {
       </section>
 
       <section className="guide-section">
-        <h3>Winning Conditions</h3>
+        <h3>Game Completion - When Is The Game Over?</h3>
+        <div className="important-note">
+          <h4>🏁 The game ends when ALL THREE conditions are met for EVERY player:</h4>
+          <ol style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
+            <li><strong>✅ Item Condition:</strong> Each person has the physical <strong>torn-off paper item</strong> that matches their need
+              <ul style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>
+                <li>Example: If Sarah needs "First Aid Kit", she must physically hold the torn-off paper showing "First Aid Kit"</li>
+              </ul>
+            </li>
+            <li><strong>✅ Relationship Condition:</strong> Each person is <strong>physically standing next to</strong> the person they were looking for
+              <ul style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>
+                <li>Example: If Sarah needs to find her spouse John, they must be standing together</li>
+              </ul>
+            </li>
+            <li><strong>✅ Service Condition:</strong> Anyone who needed a specialist has that specialist's <strong>signature on their card</strong>
+              <ul style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>
+                <li>Example: If Sarah needs a Doctor for broken leg, a Doctor must have signed her card</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
+        <h4>How Referee Verifies Completion:</h4>
+        <ol>
+          <li><strong>Physical Check:</strong> Walk around and verify each player is holding the item they need</li>
+          <li><strong>Visual Check:</strong> Verify people who needed to find each other are standing together</li>
+          <li><strong>Signature Check:</strong> Check all service recipient cards for specialist signatures</li>
+        </ol>
+
+        <h4>Scoring (After Completion):</h4>
         <p>This is a <strong>cooperative game</strong> - the team wins together based on:</p>
         <ul>
-          <li>✅ Number of objectives completed</li>
-          <li>✅ Radio discipline maintained</li>
-          <li>✅ Effective coordination demonstrated</li>
+          <li>✅ Completion time (faster = better)</li>
+          <li>✅ Radio discipline maintained throughout</li>
+          <li>✅ Effective coordination during transport phases</li>
           <li>✅ Strategic decisions made under pressure</li>
         </ul>
-        <p><strong>Perfect Score:</strong> All players complete their objectives with excellent radio protocol</p>
+        <p><strong>Perfect Score:</strong> All conditions met with excellent radio protocol and minimal infractions</p>
       </section>
 
       <section className="guide-section">

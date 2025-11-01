@@ -203,18 +203,24 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
                     </div>
                   )}
 
-                  {role.alsoNeeds && role.alsoNeeds.length > 0 && (
+                  {role.relationship && (
                     <div className="print-dilemma">
-                      <strong>⚡ Strategic Dilemma:</strong>
-                      {role.alsoNeeds.map((also, index) => (
-                        <div key={index}>
-                          {also.type === 'relationship' ? (
-                            <>💔 {also.description}</>
-                          ) : (
-                            <>• Also needs {also.service} from {also.profession}</>
-                          )}
-                        </div>
-                      ))}
+                      <strong>💔 Relationship:</strong> {role.relationship.description}
+                      <div style={{ marginLeft: '1rem', fontStyle: 'italic' }}>
+                        ({role.relationship.partnerName} @ Location {role.relationship.partnerLocation})
+                      </div>
+                    </div>
+                  )}
+
+                  {role.needsType === 'service' && (
+                    <div className="print-signature-box">
+                      <strong>Service Verification:</strong>
+                      <div className="signature-line">
+                        <span>Specialist Signature: _________________________________</span>
+                      </div>
+                      <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', fontStyle: 'italic' }}>
+                        ({getServiceProvider(role)} must sign here when service is provided)
+                      </div>
                     </div>
                   )}
                 </div>
@@ -222,6 +228,23 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
                 <div className="print-card-footer">
                   Card #{role.id + 1} | {scenario.title}
                 </div>
+
+                {/* TEAR-OFF SECTION - Item this person HAS */}
+                {role.has && !role.has.includes('Skills') && (
+                  <div className="tear-off-section">
+                    <div className="perforation-line">
+                      ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ TEAR HERE ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️ ✂️
+                    </div>
+                    <div className="tear-off-content">
+                      <div className="tear-off-label">ITEM FOR TRANSPORT</div>
+                      <div className="tear-off-item">{role.has}</div>
+                      <div className="tear-off-from">From: {role.name}</div>
+                      <div className="tear-off-instructions">
+                        Give this to the transport vehicle to deliver to someone who needs it
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
