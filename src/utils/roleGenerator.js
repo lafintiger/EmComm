@@ -106,6 +106,15 @@ const SERVICE_NEEDS = {
 // High priority professions that create dilemmas
 const CRITICAL_ROLES = ['Doctor', 'Nurse', 'Paramedic', 'Fire Fighter', 'Police Officer', 'Mechanic'];
 
+// Relationship types for personal dilemmas
+const RELATIONSHIP_TYPES = [
+  { type: 'Spouse', description: 'Find spouse' },
+  { type: 'Child', description: 'Check on child' },
+  { type: 'Parent', description: 'Find parent' },
+  { type: 'Sibling', description: 'Find sibling' },
+  { type: 'Close Friend', description: 'Check on close friend' }
+];
+
 /**
  * Generate role cards for players
  * @param {number} playerCount - Number of players (6-18 recommended)
@@ -181,7 +190,10 @@ export function generateRoles(playerCount, locationCount = 3, difficulty = 'medi
     }
   }
 
-  // Step 4: Add strategic dilemmas - make critical roles needed by multiple people
+  // Step 4: Add personal relationships (spouse, family, etc.) - creates emotional dilemmas
+  addPersonalRelationships(roles, locationCount);
+
+  // Step 5: Add strategic dilemmas - make critical roles needed by multiple people
   addStrategicDilemmas(roles);
 
   return roles;
@@ -208,6 +220,103 @@ function assignItemNeed(person, roles, usedItems) {
   }
   
   return needsItem;
+}
+
+/**
+ * Add personal relationships (family, spouse, etc.) to create emotional dilemmas
+ * These relationships force players to choose between duty and family
+ */
+function addPersonalRelationships(roles, locationCount) {
+  // Only create relationships if we have enough players and locations
+  if (roles.length < 6 || locationCount < 2) return;
+  
+  const relationshipsToCreate = Math.floor(roles.length / 4); // About 25% of players have relationships
+  const usedInRelationship = new Set();
+  
+  for (let i = 0; i < relationshipsToCreate; i++) {
+    // Find two people who:
+    // 1. Aren't already in a relationship
+    // 2. Are at DIFFERENT locations
+    // 3. Preferably include at least one critical role (for dilemma impact)
+    
+    const availablePeople = roles.filter(r => 
+      !usedInRelationship.has(r.id)
+    );
+    
+    if (availablePeople.length < 2) break;
+    
+    // Prioritize critical roles for relationships (creates better dilemmas)
+    let person1 = availablePeople.find(r => r.priority === 'high') || 
+                  availablePeople[Math.floor(Math.random() * availablePeople.length)];
+    
+    // Find person at different location
+    const availablePartners = availablePeople.filter(r => 
+      r.id !== person1.id && 
+      r.location !== person1.location
+    );
+    
+    if (availablePartners.length === 0) continue;
+    
+    const person2 = availablePartners[Math.floor(Math.random() * availablePartners.length)];
+    
+    // Select relationship type
+    const relationship = RELATIONSHIP_TYPES[Math.floor(Math.random() * RELATIONSHIP_TYPES.length)];
+    
+    // Update their names to show relationship (matching last names)
+    const sharedLastName = person1.name.split(' ').pop();
+    
+    // For spouse and sibling relationships, share last name
+    if (relationship.type === 'Spouse' || relationship.type === 'Sibling') {
+      const firstName2 = person2.name.split(' ')[0];
+      person2.name = firstName2.includes('Dr.') || firstName2.includes('Officer') || firstName2.includes('Mayor')
+        ? person2.name.split(' ').slice(0, -1).join(' ') + ' ' + sharedLastName
+        : `${firstName2} ${sharedLastName}`;
+    }
+    
+    // For parent-child, child has parent's last name
+    if (relationship.type === 'Child' || relationship.type === 'Parent') {
+      if (relationship.type === 'Child') {
+        // person2 is the child
+        const firstName2 = person2.name.split(' ')[0];
+        person2.name = `${firstName2} ${sharedLastName}`;
+      } else {
+        // person1 is the child
+        const firstName1 = person1.name.split(' ')[0];
+        person1.name = `${firstName1} ${sharedLastName}`;
+      }
+    }
+    
+    // Add relationship to "alsoNeeds" field
+    if (!person1.alsoNeeds) person1.alsoNeeds = [];
+    if (!person2.alsoNeeds) person2.alsoNeeds = [];
+    
+    // Add reciprocal relationships
+    person1.alsoNeeds.push({
+      type: 'relationship',
+      relationshipType: relationship.type,
+      description: `${relationship.description} (${person2.name} @ Location ${person2.location})`,
+      targetId: person2.id,
+      priority: 'personal'
+    });
+    
+    // Add reciprocal relationship (opposite direction)
+    const reciprocalDesc = relationship.type === 'Child' ? 'Find parent' :
+                          relationship.type === 'Parent' ? 'Check on child' :
+                          relationship.type === 'Spouse' ? 'Find spouse' :
+                          relationship.type === 'Sibling' ? 'Find sibling' :
+                          'Check on close friend';
+    
+    person2.alsoNeeds.push({
+      type: 'relationship',
+      relationshipType: relationship.type,
+      description: `${reciprocalDesc} (${person1.name} @ Location ${person1.location})`,
+      targetId: person1.id,
+      priority: 'personal'
+    });
+    
+    usedInRelationship.add(person1.id);
+    usedInRelationship.add(person2.id);
+  }
 }
 
 /**

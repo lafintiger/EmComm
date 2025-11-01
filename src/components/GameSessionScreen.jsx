@@ -241,6 +241,24 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
                           {status.deliveredItem && <CheckCircle size={16} className="check-icon" />}
                         </label>
                       )}
+
+                      {role.alsoNeeds && role.alsoNeeds.length > 0 && (
+                        <div className="dilemma-indicator">
+                          <AlertTriangle size={14} style={{ color: '#ef4444' }} />
+                          <span style={{ fontSize: '0.875rem', color: '#ef4444', fontWeight: 500 }}>
+                            Strategic Dilemma:
+                          </span>
+                          {role.alsoNeeds.map((also, index) => (
+                            <div key={index} style={{ fontSize: '0.75rem', marginLeft: '1.5rem', color: '#6b7280' }}>
+                              {also.type === 'relationship' ? (
+                                <>💔 {also.description}</>
+                              ) : (
+                                <>• {also.service} ({also.profession})</>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="location-controls">

@@ -139,9 +139,15 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
                     <div className="section-label">⚡ Strategic Dilemma:</div>
                     {role.alsoNeeds.map((also, index) => (
                       <div key={index} className="dilemma-item">
-                        <span className="badge badge-danger">
-                          Also needs <strong>{also.service}</strong> from {also.profession}
-                        </span>
+                        {also.type === 'relationship' ? (
+                          <span className="badge badge-danger">
+                            💔 <strong>{also.description}</strong>
+                          </span>
+                        ) : (
+                          <span className="badge badge-danger">
+                            Also needs <strong>{also.service}</strong> from {also.profession}
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -199,7 +205,13 @@ function RoleDisplayScreen({ roles, scenario, onStart, onBack }) {
                     <div className="print-dilemma">
                       <strong>⚡ Strategic Dilemma:</strong>
                       {role.alsoNeeds.map((also, index) => (
-                        <div key={index}>• Also needs {also.service} from {also.profession}</div>
+                        <div key={index}>
+                          {also.type === 'relationship' ? (
+                            <>💔 {also.description}</>
+                          ) : (
+                            <>• Also needs {also.service} from {also.profession}</>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
