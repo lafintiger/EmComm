@@ -8,8 +8,10 @@ import './GameSessionScreen.css';
 
 function GameSessionScreen({ gameData, onEnd, onBack }) {
   const [isRunning, setIsRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [roundTimeRemaining, setRoundTimeRemaining] = useState(600); // 10 minutes = 600 seconds
+  const [totalElapsedTime, setTotalElapsedTime] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
+  const [isTransportPhase, setIsTransportPhase] = useState(false);
   const [playerStatuses, setPlayerStatuses] = useState(
     gameData.roles.map(role => ({
       id: role.id,
@@ -20,6 +22,7 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
     }))
   );
   const [currentNCC, setCurrentNCC] = useState(null); // Current Net Control Operator
+  const [transportLog, setTransportLog] = useState([]); // Track transport decisions
   const [scores, setScores] = useState({
     completionTime: 0,
     radioDiscipline: 0,
@@ -30,16 +33,26 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
   });
   const [eventLog, setEventLog] = useState([]);
 
-  // Timer effect
+  // Timer effect - countdown per round
   useEffect(() => {
     let interval;
-    if (isRunning) {
+    if (isRunning && !isTransportPhase) {
       interval = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
+        setRoundTimeRemaining(prev => {
+          if (prev <= 1) {
+            // Time's up! Enter transport phase
+            setIsRunning(false);
+            setIsTransportPhase(true);
+            logEvent('⏰ Time\'s up! Vehicle arriving for transport phase', 'warning');
+            return 0;
+          }
+          return prev - 1;
+        });
+        setTotalElapsedTime(prev => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, isTransportPhase]);
 
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -55,7 +68,7 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
 
   const logEvent = (message, type = 'info') => {
     setEventLog(prev => [{
-      timestamp: elapsedTime,
+      timestamp: totalElapsedTime,
       message,
       type,
       round: currentRound
@@ -88,8 +101,16 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
 
   const nextRound = () => {
     clearNetControl();
+    setIsTransportPhase(false);
+    setRoundTimeRemaining(600); // Reset to 10 minutes
     setCurrentRound(prev => prev + 1);
-    logEvent(`Round ${currentRound + 1} started`, 'info');
+    logEvent(`Round ${currentRound + 1} started - 10 minutes on the clock`, 'round');
+  };
+
+  const completeTransport = () => {
+    setIsTransportPhase(false);
+    setRoundTimeRemaining(600); // Reset to 10 minutes for next round
+    logEvent('Transport completed - ready for next round', 'success');
   };
 
   const assignNetControl = (playerId) => {
@@ -135,11 +156,20 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
   const handleEndGame = () => {
     const finalScores = {
       ...scores,
-      completionTime: elapsedTime
+      completionTime: totalElapsedTime
     };
     setIsRunning(false);
     logEvent('Game completed!', 'success');
     onEnd(finalScores);
+  };
+
+  const addTransportDecision = (decision) => {
+    setTransportLog(prev => [...prev, {
+      round: currentRound,
+      timestamp: totalElapsedTime,
+      decision
+    }]);
+    logEvent(`Transport: ${decision}`, 'transport');
   };
 
   const getLocationColor = (location) => {
@@ -166,10 +196,15 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
             Back
           </button>
           
-          <div className="timer-display">
+          <div className={`timer-display ${roundTimeRemaining <= 60 ? 'timer-warning' : ''} ${roundTimeRemaining === 0 ? 'timer-expired' : ''}`}>
             <Clock size={24} />
-            <span className="time">{formatTime(elapsedTime)}</span>
-            <span className="round-badge">Round {currentRound}</span>
+            <div className="timer-info">
+              <span className="time">{formatTime(roundTimeRemaining)}</span>
+              <span className="timer-label">
+                {isTransportPhase ? '🚐 TRANSPORT PHASE' : `Round ${currentRound} Time Remaining`}
+              </span>
+            </div>
+            <span className="round-badge">Round {currentRound}/3</span>
           </div>
 
           <div className="timer-controls">
@@ -266,6 +301,84 @@ function GameSessionScreen({ gameData, onEnd, onBack }) {
             )}
           </div>
         </div>
+
+        {/* Transport Phase */}
+        {isTransportPhase && (
+          <div className="transport-phase card">
+            <h2>🚐 TRANSPORT PHASE - Vehicle Has Arrived!</h2>
+            <p className="transport-instructions">
+              <strong>All 3 locations must coordinate:</strong> Decide who speaks first, communicate what's needed, 
+              and determine what/who goes where. Document decisions below then proceed to next round.
+            </p>
+
+            <div className="transport-summary">
+              <div className="summary-section">
+                <h4>Critical Needs (Must Address First):</h4>
+                <ul>
+                  {gameData.roles.filter(r => r.needsCriticalFirstRound && !playerStatuses.find(p => p.id === r.id).completedObjective).map(role => (
+                    <li key={role.id} className="critical-need">
+                      ⚠️ <strong>{role.name}</strong> @ Location {playerStatuses.find(p => p.id === role.id).currentLocation}: {role.needsService}
+                    </li>
+                  ))}
+                  {gameData.roles.filter(r => r.needsCriticalFirstRound && !playerStatuses.find(p => p.id === r.id).completedObjective).length === 0 && (
+                    <li className="all-clear">✅ All critical needs addressed!</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="summary-section">
+                <h4>Coordination Notes:</h4>
+                <textarea 
+                  className="transport-notes"
+                  placeholder="Document transport decisions: Who/what goes where? Which location spoke first? How was agreement reached?"
+                  rows="4"
+                ></textarea>
+              </div>
+
+              <div className="transport-checklist">
+                <h4>Coordination Checklist:</h4>
+                <label className="checklist-item">
+                  <input type="checkbox" />
+                  <span>Net Control organized speaking order</span>
+                </label>
+                <label className="checklist-item">
+                  <input type="checkbox" />
+                  <span>All locations communicated their needs</span>
+                </label>
+                <label className="checklist-item">
+                  <input type="checkbox" />
+                  <span>Transport decisions documented</span>
+                </label>
+                <label className="checklist-item">
+                  <input type="checkbox" />
+                  <span>Critical needs prioritized</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="transport-actions">
+              {currentRound < 3 ? (
+                <button 
+                  className="btn btn-primary btn-large" 
+                  onClick={nextRound}
+                  disabled={!currentNCC}
+                >
+                  Complete Transport & Start Round {currentRound + 1}
+                </button>
+              ) : (
+                <button 
+                  className="btn btn-success btn-large" 
+                  onClick={handleEndGame}
+                >
+                  Complete Final Transport & End Game
+                </button>
+              )}
+              {!currentNCC && (
+                <p className="warning-text">⚠️ Must assign Net Control for next round first</p>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="session-grid">
           {/* Player Tracking */}

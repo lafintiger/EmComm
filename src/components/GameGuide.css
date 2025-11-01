@@ -169,6 +169,34 @@
   font-size: 0.875rem;
 }
 
+.important-note {
+  background: #fef3c7;
+  border-left: 6px solid #f59e0b;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.important-note h4 {
+  color: #d97706;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.important-note p {
+  margin-bottom: 0.75rem;
+}
+
+.important-note ul {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.important-note strong {
+  color: #d97706;
+}
+
 /* Print Styles */
 @media print {
   .printable-document {

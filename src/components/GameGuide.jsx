@@ -105,20 +105,51 @@ function GameGuide({ onBack }) {
           <li><strong>No Shouting:</strong> Don't communicate between locations without radio</li>
         </ol>
 
-        <h4>Game Flow</h4>
+        <h4>Game Flow (3 Rounds x 10 Minutes)</h4>
         <div className="numbered-steps">
           <div className="step">
-            <span className="step-number">Round 1 (15 min)</span>
-            <p>Initial coordination - figure out who has what and where they are</p>
+            <span className="step-number">Round 1 (10 min)</span>
+            <p><strong>Initial Coordination & Critical Needs:</strong> All 3 locations coordinate via radio to:</p>
+            <ul>
+              <li>Agree on who speaks first (Net Control organizes)</li>
+              <li>Communicate what's needed at each location</li>
+              <li>Prioritize CRITICAL first-round needs (life-threatening!)</li>
+            </ul>
+            <p><strong>Transport Phase:</strong> Vehicle arrives! Teams decide what/who goes where based on their coordination.</p>
           </div>
           <div className="step">
-            <span className="step-number">Round 2 (15 min)</span>
-            <p>Movement and exchanges - start traveling to meet needs</p>
+            <span className="step-number">Round 2 (10 min)</span>
+            <p><strong>Movement & Exchanges:</strong> New Net Control takes over. Teams continue coordinating:</p>
+            <ul>
+              <li>Track what was delivered in Round 1</li>
+              <li>Coordinate remaining needs</li>
+              <li>Handle personal dilemmas (relationships)</li>
+            </ul>
+            <p><strong>Transport Phase:</strong> Second vehicle arrives - more coordination required!</p>
           </div>
           <div className="step">
-            <span className="step-number">Round 3 (15 min)</span>
-            <p>Final push - complete remaining objectives and handle dilemmas</p>
+            <span className="step-number">Round 3 (10 min)</span>
+            <p><strong>Final Push:</strong> Third Net Control coordinates final efforts:</p>
+            <ul>
+              <li>Complete remaining objectives</li>
+              <li>Resolve difficult strategic dilemmas</li>
+              <li>Ensure all critical needs addressed</li>
+            </ul>
+            <p><strong>Final Transport Phase:</strong> Last chance to get people/items where they need to be!</p>
           </div>
+        </div>
+
+        <div className="important-note">
+          <h4>⚠️ The Transport System - Why It Creates Urgency</h4>
+          <p><strong>Each round has only 10 minutes.</strong> At the end, a vehicle arrives to transport people and materials between locations.</p>
+          <p><strong>The Challenge:</strong> All 3 locations must coordinate via radio to decide:</p>
+          <ul>
+            <li>Who talks first? (This can be chaotic without Net Control!)</li>
+            <li>What needs to go where?</li>
+            <li>Who needs to travel to which location?</li>
+          </ul>
+          <p><strong>If teams don't coordinate well, people miss the transport and needs go unmet!</strong></p>
+          <p>This creates time pressure and demonstrates <strong>why radio protocols matter</strong> - without structure, chaos ensues!</p>
         </div>
       </section>
 
