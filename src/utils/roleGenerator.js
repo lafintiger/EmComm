@@ -584,48 +584,52 @@ export function validateRoles(roles) {
 export function generateScenario(type = 'storm') {
   const scenarios = {
     storm: {
-      title: 'Storm Aftermath',
-      description: 'A severe thunderstorm has knocked out power and cell networks. Communities are isolated and need coordination.',
-      timeframe: '48 hours after impact',
+      title: 'Severe Storm Aftermath - Operation Blackout',
+      description: 'A devastating line of severe thunderstorms tore through the region 48 hours ago, leaving a trail of destruction in its wake. Widespread power outages have plunged entire neighborhoods into darkness. Cell towers are down, and traditional phone lines are severed. Trees and power lines litter the streets, blocking critical routes to hospitals and emergency services. The community is fractured into isolated pockets, each facing mounting challenges: dwindling medical supplies, spoiling food, and rising anxiety. Summer heat is making conditions worse as air conditioning fails and water pumps stop working. You are part of the emergency communication network—the only lifeline connecting these separated communities. Lives depend on your ability to coordinate resources, reunite families, and get critical help where it\'s needed most. Every minute counts as medical conditions worsen and supplies run dangerously low.',
+      timeframe: '48 hours post-impact | Day 3 of emergency operations',
       specialRules: [
-        'Limited radio battery power',
-        'Some roads are blocked by fallen trees',
-        'Medical needs are increasing'
+        'Limited radio battery power - conserve transmissions',
+        'Roads blocked by fallen trees and downed power lines',
+        'Medical conditions deteriorating without power for medical equipment',
+        'Heat stress increasing due to lack of air conditioning'
       ],
-      urgentConditions: ['Medical emergencies', 'Running out of water']
+      urgentConditions: ['Medical emergencies without power', 'Insulin requiring refrigeration', 'Running out of clean water', 'Heat-related illnesses']
     },
     earthquake: {
-      title: 'Earthquake Response',
-      description: 'A 6.5 magnitude earthquake has damaged infrastructure. Roads are cracked and buildings are unstable.',
-      timeframe: '24 hours after initial quake',
+      title: 'Major Earthquake Response - The Big One',
+      description: 'At 3:47 AM this morning, a magnitude 6.5 earthquake violently shook the region for what felt like an eternity. Buildings swayed, windows shattered, and the ground cracked open in multiple locations. Twenty-four hours later, the true scope of devastation is becoming clear. Gas lines have ruptured, filling neighborhoods with dangerous fumes. Water mains burst, flooding streets and leaving thousands without drinking water. Several structures have suffered critical damage and could collapse at any moment. Aftershocks continue to rattle nerves and further weaken damaged buildings. Roads are impassable—buckled by the quake\'s force, blocked by rubble, or simply too dangerous to traverse near unstable structures. Families are separated, with loved ones trapped or unreachable. The normal communication infrastructure has failed completely. As part of the emergency radio network, you must navigate this chaos to coordinate search and rescue, get medical help to the injured, reunite desperate families, and prevent further casualties. The next aftershock could come at any moment, and time is running out for those trapped in the debris.',
+      timeframe: '24 hours post-quake | Aftershock period active',
       specialRules: [
-        'Aftershocks may occur (random events)',
-        'Some routes are impassable',
-        'Structural safety concerns'
+        'Aftershocks may occur without warning—be prepared to take cover',
+        'Multiple routes impassable due to structural damage',
+        'Structural safety assessments required before entering buildings',
+        'Gas leak zones must be avoided—no spark-producing equipment'
       ],
-      urgentConditions: ['Trapped individuals', 'Gas leaks', 'Structural collapse risk']
+      urgentConditions: ['People trapped in collapsed structures', 'Active gas leaks creating explosion risk', 'Buildings at imminent collapse risk', 'Crush injuries requiring immediate surgery']
     },
     flood: {
-      title: 'Flash Flood Emergency',
-      description: 'Heavy rainfall has caused flash flooding. Water levels are rising and evacuation is necessary.',
-      timeframe: '12 hours into flood event',
+      title: 'Flash Flood Emergency - Rising Waters',
+      description: 'Twelve hours of relentless rainfall has transformed peaceful creeks into raging torrents and turned streets into rivers. What started as a severe weather warning has escalated into a life-threatening flash flood emergency. Water levels are rising by the hour, already reaching waist-deep in low-lying areas and threatening to climb higher. Evacuation routes are rapidly disappearing as bridges become submerged and roads turn into impassable channels of debris-filled water. Entire families are trapped on upper floors and rooftops, watching helplessly as the water creeps higher. The elderly and those with mobility issues cannot evacuate on their own. Contaminated floodwater has compromised the drinking water supply, and medical facilities are at risk of flooding. Vehicles are submerged and useless. With conventional communication systems flooded out, your emergency radio network is the only way to coordinate rescues, direct people to higher ground, and prevent drownings. The forecast shows no sign of the rain stopping, and weather services warn the worst may be yet to come. Every decision about who to evacuate first could mean the difference between life and death.',
+      timeframe: '12 hours into flood event | Waters still rising',
       specialRules: [
-        'Water levels affect movement times',
-        'Evacuation priorities',
-        'Limited dry supplies'
+        'Water depth affects travel time and safety—wading takes longer',
+        'Evacuation priorities: elderly, disabled, families with young children',
+        'Limited dry supplies and medical equipment',
+        'Do not attempt to drive through floodwater—turn around, don\'t drown'
       ],
-      urgentConditions: ['Rising water', 'Medical evacuations', 'Contaminated water supply']
+      urgentConditions: ['Waters rising 2 inches per hour', 'Medical evacuations from flooded facilities', 'Contaminated water supply—no safe drinking water', 'People stranded on rooftops']
     },
     wildfire: {
-      title: 'Wildfire Evacuation',
-      description: 'A fast-moving wildfire is approaching. Evacuation and coordination are critical.',
-      timeframe: '6 hours before predicted arrival',
+      title: 'Wildfire Evacuation - Red Flag Warning',
+      description: 'A wind-driven wildfire that started in the hills 18 hours ago has exploded in size, consuming everything in its path and bearing down on populated areas with terrifying speed. Fueled by drought-dried vegetation and pushed by 40 mph winds, the fire has already burned through thousands of acres and shows no signs of slowing. The sky is choked with thick, acrid smoke that burns lungs and reduces visibility to near-zero. Ash is falling like snow, and embers are landing miles ahead of the fire line, starting new spot fires without warning. Evacuation orders have been issued, but time is running out—fire officials estimate you have perhaps six hours before the main fire front arrives, maybe less if winds shift. Roads are clogged with evacuees, and some escape routes may already be cut off. The elderly, those without vehicles, and pet owners need assistance. People with respiratory issues are already suffering from smoke inhalation. Some residents are refusing to leave, not understanding the deadly danger they face. Your emergency radio network must coordinate a massive evacuation, ensure no one is left behind, and keep everyone informed about which routes are still safe as the situation changes minute by minute. When wildfire moves this fast, there are no second chances. The decisions you make in the next few hours will determine who makes it out alive.',
+      timeframe: '6 hours before predicted fire arrival | Conditions deteriorating rapidly',
       specialRules: [
-        'Wind direction affects safe zones',
-        'Smoke limiting visibility',
-        'Urgent evacuation timing'
+        'Wind direction changes affect safe zones—monitor updates constantly',
+        'Smoke severely limiting visibility—navigation difficult',
+        'Urgent evacuation timing—DO NOT delay',
+        'Some escape routes may close with little warning'
       ],
-      urgentConditions: ['Evacuation orders', 'Smoke inhalation', 'Cut-off escape routes']
+      urgentConditions: ['Mandatory evacuation orders in effect', 'Severe smoke inhalation cases', 'Escape routes being cut off by fire', 'Spot fires appearing miles from main fire line']
     }
   };
   
