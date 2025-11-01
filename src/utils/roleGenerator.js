@@ -225,6 +225,16 @@ function assignItemNeed(person, roles, usedItems) {
 /**
  * Add personal relationships (family, spouse, etc.) to create emotional dilemmas
  * These relationships force players to choose between duty and family
+ * 
+ * COMPLEXITY CONSTRAINT - Triangle Pattern:
+ * If person at Location A has:
+ *   - A need (item/service) at Location B
+ *   - A relationship at Location C (NOT A, NOT B)
+ * This ensures maximum complexity - can't solve everything by going to one location
+ * 
+ * Example:
+ *   - Doctor at Location 1 needs Insulin (at Location 2) and spouse is at Location 3
+ *   - Must choose: Go to Location 2 for insulin OR Location 3 for spouse
  */
 function addPersonalRelationships(roles, locationCount) {
   // Only create relationships if we have enough players and locations
@@ -249,11 +259,41 @@ function addPersonalRelationships(roles, locationCount) {
     let person1 = availablePeople.find(r => r.priority === 'high') || 
                   availablePeople[Math.floor(Math.random() * availablePeople.length)];
     
-    // Find person at different location
-    const availablePartners = availablePeople.filter(r => 
-      r.id !== person1.id && 
-      r.location !== person1.location
-    );
+    // Find the location where person1's need is (item or service provider)
+    let person1NeedLocation = null;
+    if (person1.needsType === 'item') {
+      // Find where the needed item is located
+      const itemHolder = roles.find(r => r.has === person1.needs);
+      if (itemHolder) person1NeedLocation = itemHolder.location;
+    } else if (person1.needsType === 'service') {
+      // Find where the service provider is located
+      const serviceProvider = roles.find(r => r.profession === person1.needs);
+      if (serviceProvider) person1NeedLocation = serviceProvider.location;
+    }
+    
+    // Find person at different location from BOTH person1 AND their need
+    // This creates a triangle: Person at A, Need at B, Relationship at C
+    // ALSO ensure person1 is not at the same location as person2's need
+    const availablePartners = availablePeople.filter(r => {
+      if (r.id === person1.id) return false;
+      if (r.location === person1.location) return false;
+      if (person1NeedLocation !== null && r.location === person1NeedLocation) return false;
+      
+      // Check if person1's location matches where person2's need is
+      let person2NeedLocation = null;
+      if (r.needsType === 'item') {
+        const itemHolder = roles.find(role => role.has === r.needs);
+        if (itemHolder) person2NeedLocation = itemHolder.location;
+      } else if (r.needsType === 'service') {
+        const serviceProvider = roles.find(role => role.profession === r.needs);
+        if (serviceProvider) person2NeedLocation = serviceProvider.location;
+      }
+      
+      // person1 should not be at the same location as person2's need
+      if (person2NeedLocation !== null && person1.location === person2NeedLocation) return false;
+      
+      return true;
+    });
     
     if (availablePartners.length === 0) continue;
     
@@ -462,6 +502,34 @@ export function validateRoles(roles) {
       if (!hasProvider) {
         issues.push(`${role.name} needs ${role.needs} service which doesn't exist in game`);
       }
+    }
+  });
+  
+  // Check 5: Triangle complexity - relationships should not be at same location as needs
+  roles.forEach(role => {
+    if (role.alsoNeeds && role.alsoNeeds.length > 0) {
+      // Find role's need location
+      let needLocation = null;
+      if (role.needsType === 'item') {
+        const itemHolder = roles.find(r => r.has === role.needs);
+        if (itemHolder) needLocation = itemHolder.location;
+      } else if (role.needsType === 'service') {
+        const serviceProvider = roles.find(r => r.profession === role.needs);
+        if (serviceProvider) needLocation = serviceProvider.location;
+      }
+      
+      // Check each relationship
+      role.alsoNeeds.forEach(alsoNeed => {
+        if (alsoNeed.type === 'relationship' && alsoNeed.targetId !== undefined) {
+          const relatedPerson = roles.find(r => r.id === alsoNeed.targetId);
+          if (relatedPerson) {
+            // Relationship should not be at same location as need (triangle constraint)
+            if (needLocation !== null && relatedPerson.location === needLocation) {
+              issues.push(`${role.name} has relationship and need at same location ${needLocation} - breaks triangle complexity`);
+            }
+          }
+        }
+      });
     }
   });
   
