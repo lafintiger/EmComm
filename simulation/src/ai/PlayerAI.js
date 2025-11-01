@@ -6,15 +6,20 @@
 import { getNeedsDescription, getServiceProvider } from '../../../src/utils/roleGenerator.js';
 
 export class PlayerAI {
-  constructor(role, gameState) {
+  constructor(role, getGameStateFn) {
     this.role = role;
-    this.gameState = gameState;
+    this.getGameState = getGameStateFn; // Function to get current game state
     this.memory = {
       knownLocations: {}, // Track where other players/items are
       pendingCommunications: [],
       lastAction: null
     };
     this.personality = this.generatePersonality();
+  }
+  
+  // Get current game state (always fresh)
+  get gameState() {
+    return this.getGameState();
   }
 
   generatePersonality() {

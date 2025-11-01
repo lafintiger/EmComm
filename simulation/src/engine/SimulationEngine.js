@@ -35,8 +35,8 @@ export class SimulationEngine {
       infractions: 0
     };
 
-    // Create AI for each player
-    this.aiPlayers = this.roles.map(role => new PlayerAI(role, this.getGameState()));
+    // Create AI for each player - pass function to get fresh game state
+    this.aiPlayers = this.roles.map(role => new PlayerAI(role, () => this.getGameState()));
     
     this.turnNumber = 0;
   }
@@ -204,8 +204,14 @@ export class SimulationEngine {
     const recipient = this.roles.find(r => r.id === action.recipient);
     
     if (!recipient) return;
+    
+    // Check if at same location
+    if (recipient.currentLocation !== ai.role.currentLocation) {
+      this.logEvent(`⚠️ ${ai.role.name} tried to deliver to ${recipient.name} but they're not at the same location!`, 'warning');
+      return;
+    }
 
-    // Mark delivery complete
+    // Mark delivery complete for provider
     const roleIdx = this.roles.findIndex(r => r.id === ai.role.id);
     this.roles[roleIdx].itemDelivered = true;
     ai.role.itemDelivered = true;
@@ -213,6 +219,12 @@ export class SimulationEngine {
     // Mark recipient objective complete
     const recipientIdx = this.roles.findIndex(r => r.id === recipient.id);
     this.roles[recipientIdx].objectiveComplete = true;
+    
+    // Update recipient AI's role too
+    const recipientAI = this.aiPlayers.find(a => a.role.id === action.recipient);
+    if (recipientAI) {
+      recipientAI.role.objectiveComplete = true;
+    }
 
     this.logEvent(`✅ ${ai.role.name} delivered ${action.item} to ${recipient.name}`, 'success');
     
@@ -231,12 +243,28 @@ export class SimulationEngine {
       return; // Can't receive if not at same location
     }
 
-    // Mark objective complete
+    // Mark objective complete for receiver
     const roleIdx = this.roles.findIndex(r => r.id === ai.role.id);
     this.roles[roleIdx].objectiveComplete = true;
     ai.role.objectiveComplete = true;
 
+    // Mark delivery complete for provider
+    const providerIdx = this.roles.findIndex(r => r.id === action.provider);
+    this.roles[providerIdx].itemDelivered = true;
+    
+    // Update provider AI's role too
+    const providerAI = this.aiPlayers.find(a => a.role.id === action.provider);
+    if (providerAI) {
+      providerAI.role.itemDelivered = true;
+    }
+
     this.logEvent(`✅ ${ai.role.name} received ${action.item} from ${provider.name}`, 'success');
+    
+    if (ai.role.needsCriticalFirstRound) {
+      this.scores.highPrioritySuccess += 20;
+      this.logEvent(`🎯 CRITICAL OBJECTIVE COMPLETE!`, 'critical');
+    }
+    
     this.scores.teamCoordination += 10;
   }
 
@@ -247,12 +275,23 @@ export class SimulationEngine {
       return; // Can't receive service if not at same location
     }
 
-    // Mark objective complete
+    // Mark objective complete for receiver
     const roleIdx = this.roles.findIndex(r => r.id === ai.role.id);
     this.roles[roleIdx].objectiveComplete = true;
     ai.role.objectiveComplete = true;
 
-    this.logEvent(`✅ ${provider.name} provided service to ${ai.role.name}`, 'success');
+    // Mark service as "delivered" for provider (even though it's a service, not an item)
+    const providerIdx = this.roles.findIndex(r => r.id === action.provider);
+    if (provider.has && provider.has.includes('Skills')) {
+      this.roles[providerIdx].itemDelivered = true; // Using this field to track service provided
+      
+      const providerAI = this.aiPlayers.find(a => a.role.id === action.provider);
+      if (providerAI) {
+        providerAI.role.itemDelivered = true;
+      }
+    }
+
+    this.logEvent(`✅ ${provider.name} provided ${ai.role.needsService} service to ${ai.role.name}`, 'success');
     
     if (ai.role.needsCriticalFirstRound) {
       this.scores.highPrioritySuccess += 20;
