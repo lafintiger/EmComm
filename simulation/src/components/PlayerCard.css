@@ -1,0 +1,109 @@
+.player-card-sim {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.player-card-sim.complete {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.player-card-sim:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.player-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 0.5rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.player-info strong {
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.profession {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.critical-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.player-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.objective-status,
+.has-item,
+.relationship-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.status-icon.complete {
+  color: #10b981;
+}
+
+.status-icon.pending {
+  color: #9ca3af;
+}
+
+.complete-text {
+  color: #10b981;
+  text-decoration: line-through;
+}
+
+.has-item {
+  color: #6b7280;
+}
+
+.check-small {
+  color: #10b981;
+  margin-left: auto;
+}
+
+.relationship-status {
+  color: #8b5cf6;
+}
+
+.heart-complete {
+  color: #10b981;
+}
+
+.heart-pending {
+  color: #ef4444;
+}
+
+.relationship-text {
+  font-size: 0.8rem;
+}
+
