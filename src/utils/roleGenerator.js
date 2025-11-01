@@ -191,46 +191,17 @@ export function generateRoles(playerCount, locationCount = 3, difficulty = 'medi
     });
   }
 
-  // Step 2: Assign Net Control Operators (one per round, distributed across locations)
-  assignNetControlOperators(roles, locationCount);
-
-  // Step 3: Ensure EVERYONE has something someone else needs
+  // Step 2: Ensure EVERYONE has something someone else needs
+  // Note: Net Control Operators will be manually assigned by organizers
   assignWhatPeopleHave(roles, usedItems, criticalSkillProfessions);
 
-  // Step 4: Create 100% relationship coverage - EVERYONE paired with someone at different location
+  // Step 3: Create 100% relationship coverage - EVERYONE paired with someone at different location
   addUniversalRelationships(roles, locationCount);
 
-  // Step 5: Assign what everyone NEEDS (ensuring triangle complexity)
+  // Step 4: Assign what everyone NEEDS (ensuring triangle complexity)
   assignWhatPeopleNeed(roles, usedItems);
 
   return roles;
-}
-
-/**
- * Assign Net Control Operators - one for each round
- * They must stay at their location during their round
- */
-function assignNetControlOperators(roles, locationCount) {
-  // Pick 3 players from different locations if possible
-  const rounds = [1, 2, 3];
-  const assignedLocations = new Set();
-  
-  for (const round of rounds) {
-    // Try to find someone at a location we haven't used yet
-    const availableRoles = roles.filter(r => 
-      r.nccRound === null && 
-      !assignedLocations.has(r.location)
-    );
-    
-    const ncc = availableRoles.length > 0
-      ? availableRoles[Math.floor(Math.random() * availableRoles.length)]
-      : roles.find(r => r.nccRound === null);
-    
-    if (ncc) {
-      ncc.nccRound = round;
-      assignedLocations.add(ncc.location);
-    }
-  }
 }
 
 /**
@@ -599,11 +570,7 @@ export function validateRoles(roles) {
     issues.push(`${unrelatedPeople.length} people have no relationships - everyone should be paired`);
   }
   
-  // Check 7: Net Control Operators assigned
-  const nccCount = roles.filter(r => r.nccRound !== null).length;
-  if (nccCount !== 3) {
-    issues.push(`Should have 3 Net Control Operators (one per round), found ${nccCount}`);
-  }
+  // Note: Net Control Operators will be manually assigned by organizers during setup
   
   return {
     valid: issues.length === 0,
