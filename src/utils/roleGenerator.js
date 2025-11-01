@@ -103,21 +103,40 @@ const SERVICE_NEEDS = {
   ]
 };
 
-// High priority professions that create dilemmas
-const CRITICAL_ROLES = ['Doctor', 'Nurse', 'Paramedic', 'Fire Fighter', 'Police Officer', 'Mechanic'];
+// CRITICAL FIRST-ROUND SKILLS - Must be completed in Round 1 to enable other actions
+// These represent life-saving or infrastructure-enabling services
+const CRITICAL_FIRST_ROUND_SKILLS = {
+  'Doctor': 'life-threatening medical emergency (URGENT - Round 1)',
+  'Paramedic': 'severe trauma patient (URGENT - Round 1)',
+  'Fire Fighter': 'person trapped in building (URGENT - Round 1)',
+  'Mechanic': 'generator repair needed for power (URGENT - Round 1)',
+  'Electrician': 'restore power to shelter (URGENT - Round 1)',
+  'Radio Technician': 'fix repeater for communications (URGENT - Round 1)',
+  'Engineer': 'structural assessment for safety (URGENT - Round 1)',
+  'Plumber': 'restore water supply (URGENT - Round 1)'
+};
 
-// Relationship types for personal dilemmas
+// High priority professions that create dilemmas
+const CRITICAL_ROLES = Object.keys(CRITICAL_FIRST_ROUND_SKILLS);
+
+// Relationship types for personal dilemmas - EVERYONE gets one
 const RELATIONSHIP_TYPES = [
-  { type: 'Spouse', description: 'Find spouse' },
+  { type: 'Spouse', description: 'Reunite with spouse' },
   { type: 'Child', description: 'Check on child' },
   { type: 'Parent', description: 'Find parent' },
   { type: 'Sibling', description: 'Find sibling' },
-  { type: 'Close Friend', description: 'Check on close friend' }
+  { type: 'Partner', description: 'Find partner' }
 ];
 
 /**
  * Generate role cards for players
- * @param {number} playerCount - Number of players (6-18 recommended)
+ * NEW REQUIREMENTS:
+ * 1. EVERYONE has a separated relationship (100% coverage)
+ * 2. EVERYONE has something someone else needs (item or skill)
+ * 3. At least 1/3 have CRITICAL FIRST-ROUND SKILLS
+ * 4. Net Control Operator rotates each round
+ * 
+ * @param {number} playerCount - Number of players (6-18 recommended, must be even)
  * @param {number} locationCount - Number of locations (default 3)
  * @param {string} difficulty - 'easy', 'medium', 'hard'
  * @returns {Array} Array of role objects
@@ -126,14 +145,35 @@ export function generateRoles(playerCount, locationCount = 3, difficulty = 'medi
   if (playerCount < 6) {
     throw new Error('Minimum 6 players required');
   }
+  
+  // Ensure even number for pairing
+  if (playerCount % 2 !== 0) {
+    playerCount = playerCount + 1; // Add one player to make it even
+  }
 
   const roles = [];
   const usedProfessions = [];
   const usedItems = [];
   
-  // Step 1: Assign names, professions, and starting locations
+  // Calculate how many need critical first-round skills (at least 1/3)
+  const criticalSkillCount = Math.ceil(playerCount / 3);
+  const criticalSkillProfessions = [];
+  
+  // Step 1: Assign professions with required critical skills
   for (let i = 0; i < playerCount; i++) {
-    const profession = selectUnique(PROFESSIONS, usedProfessions);
+    let profession;
+    
+    // First 1/3 get critical first-round professions
+    if (i < criticalSkillCount) {
+      const availableCritical = CRITICAL_ROLES.filter(p => !usedProfessions.includes(p));
+      profession = availableCritical.length > 0 
+        ? availableCritical[Math.floor(Math.random() * availableCritical.length)]
+        : selectUnique(PROFESSIONS, usedProfessions);
+      criticalSkillProfessions.push(profession);
+    } else {
+      profession = selectUnique(PROFESSIONS, usedProfessions);
+    }
+    
     usedProfessions.push(profession);
     
     roles.push({
@@ -141,33 +181,180 @@ export function generateRoles(playerCount, locationCount = 3, difficulty = 'medi
       name: generateName(profession),
       profession: profession,
       location: (i % locationCount) + 1,
-      has: null,         // Can be an item
-      needs: null,       // Can be an item OR a service from a role
+      has: null,         // Either item OR critical skill
+      needs: null,       // Either item OR service
       needsType: null,   // 'item' or 'service'
-      priority: CRITICAL_ROLES.includes(profession) ? 'high' : 'normal'
+      priority: CRITICAL_ROLES.includes(profession) ? 'high' : 'normal',
+      isCriticalFirstRound: i < criticalSkillCount,
+      relationship: null, // Will be filled in step 4
+      nccRound: null     // Net Control Operator for which round (1, 2, or 3)
     });
   }
 
-  // Step 2: Assign what people HAVE (items)
-  // Not everyone has items - some people's value is their skill/profession
-  const itemHolderCount = Math.floor(playerCount * 0.7); // 70% have items
-  for (let i = 0; i < itemHolderCount; i++) {
-    const item = selectUnique(ITEMS, usedItems);
-    usedItems.push(item);
-    roles[i].has = item;
-  }
+  // Step 2: Assign Net Control Operators (one per round, distributed across locations)
+  assignNetControlOperators(roles, locationCount);
 
-  // Step 3: Assign what people NEED (mix of items and realistic service needs)
-  for (let i = 0; i < playerCount; i++) {
-    // Decide if they need an item or a service (60% item, 40% service for realism)
-    const needsService = Math.random() > 0.6;
+  // Step 3: Ensure EVERYONE has something someone else needs
+  assignWhatPeopleHave(roles, usedItems, criticalSkillProfessions);
+
+  // Step 4: Create 100% relationship coverage - EVERYONE paired with someone at different location
+  addUniversalRelationships(roles, locationCount);
+
+  // Step 5: Assign what everyone NEEDS (ensuring triangle complexity)
+  assignWhatPeopleNeed(roles, usedItems);
+
+  return roles;
+}
+
+/**
+ * Assign Net Control Operators - one for each round
+ * They must stay at their location during their round
+ */
+function assignNetControlOperators(roles, locationCount) {
+  // Pick 3 players from different locations if possible
+  const rounds = [1, 2, 3];
+  const assignedLocations = new Set();
+  
+  for (const round of rounds) {
+    // Try to find someone at a location we haven't used yet
+    const availableRoles = roles.filter(r => 
+      r.nccRound === null && 
+      !assignedLocations.has(r.location)
+    );
+    
+    const ncc = availableRoles.length > 0
+      ? availableRoles[Math.floor(Math.random() * availableRoles.length)]
+      : roles.find(r => r.nccRound === null);
+    
+    if (ncc) {
+      ncc.nccRound = round;
+      assignedLocations.add(ncc.location);
+    }
+  }
+}
+
+/**
+ * Assign what everyone HAS
+ * - Critical first-round players have their critical skill
+ * - Everyone else gets an item that someone will need
+ */
+function assignWhatPeopleHave(roles, usedItems, criticalSkillProfessions) {
+  roles.forEach(role => {
+    if (role.isCriticalFirstRound && CRITICAL_FIRST_ROUND_SKILLS[role.profession]) {
+      // They HAVE a critical skill (their profession)
+      role.has = `${role.profession} Skills (CRITICAL)`;
+      role.hasCriticalSkill = true;
+    } else {
+      // They HAVE an item
+      const item = selectUnique(ITEMS, usedItems);
+      usedItems.push(item);
+      role.has = item;
+      role.hasCriticalSkill = false;
+    }
+  });
+}
+
+/**
+ * Create 100% relationship coverage - EVERYONE gets paired
+ * Each pair is at different locations for maximum complexity
+ */
+function addUniversalRelationships(roles, locationCount) {
+  const unpaired = [...roles];
+  const paired = new Set();
+  
+  // Shuffle to randomize pairing
+  for (let i = unpaired.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [unpaired[i], unpaired[j]] = [unpaired[j], unpaired[i]];
+  }
+  
+  // Pair everyone
+  for (let i = 0; i < unpaired.length; i += 2) {
+    if (i + 1 >= unpaired.length) break;
+    
+    const person1 = unpaired[i];
+    const person2 = unpaired[i + 1];
+    
+    // If they're at the same location, try to swap person2 with someone at a different location
+    if (person1.location === person2.location && i + 2 < unpaired.length) {
+      // Try to find someone at a different location to swap with
+      for (let j = i + 2; j < unpaired.length; j++) {
+        if (unpaired[j].location !== person1.location && !paired.has(unpaired[j].id)) {
+          [unpaired[i + 1], unpaired[j]] = [unpaired[j], unpaired[i + 1]];
+          break;
+        }
+      }
+    }
+    
+    // Re-assign person2 after potential swap
+    const finalPerson2 = unpaired[i + 1];
+    
+    // Select relationship type
+    const relationship = RELATIONSHIP_TYPES[Math.floor(Math.random() * RELATIONSHIP_TYPES.length)];
+    
+    // Update names to show relationship (matching last names)
+    const sharedLastName = person1.name.split(' ').pop();
+    
+    if (relationship.type === 'Spouse' || relationship.type === 'Sibling' || relationship.type === 'Partner') {
+      const firstName2 = finalPerson2.name.split(' ')[0];
+      finalPerson2.name = firstName2.includes('Dr.') || firstName2.includes('Officer') || firstName2.includes('Mayor')
+        ? finalPerson2.name.split(' ').slice(0, -1).join(' ') + ' ' + sharedLastName
+        : `${firstName2} ${sharedLastName}`;
+    }
+    
+    if (relationship.type === 'Child' || relationship.type === 'Parent') {
+      const firstName2 = finalPerson2.name.split(' ')[0];
+      finalPerson2.name = `${firstName2} ${sharedLastName}`;
+    }
+    
+    // Store relationship data
+    person1.relationship = {
+      type: relationship.type,
+      description: relationship.description,
+      partnerId: finalPerson2.id,
+      partnerName: finalPerson2.name,
+      partnerLocation: finalPerson2.location
+    };
+    
+    const reciprocalDesc = relationship.type === 'Child' ? 'Find parent' :
+                          relationship.type === 'Parent' ? 'Check on child' :
+                          relationship.type === 'Spouse' ? 'Reunite with spouse' :
+                          relationship.type === 'Sibling' ? 'Find sibling' :
+                          'Find partner';
+    
+    finalPerson2.relationship = {
+      type: relationship.type,
+      description: reciprocalDesc,
+      partnerId: person1.id,
+      partnerName: person1.name,
+      partnerLocation: person1.location
+    };
+    
+    paired.add(person1.id);
+    paired.add(finalPerson2.id);
+  }
+}
+
+/**
+ * Assign what everyone NEEDS
+ * Mix of items and services, ensuring triangle complexity:
+ * - Person at Location A
+ * - Need at Location B
+ * - Relationship at Location C
+ */
+function assignWhatPeopleNeed(roles, usedItems) {
+  roles.forEach(role => {
+    // Decide if they need an item or a service
+    const needsService = Math.random() > 0.5;
     
     if (needsService) {
-      // Need a service from someone with a useful profession
+      // Need a service from someone at a DIFFERENT location
+      // And NOT at the same location as their relationship
       const availableServiceProviders = roles.filter(r => 
         SERVICE_NEEDS[r.profession] !== undefined && 
-        r.location !== roles[i].location &&
-        r.id !== i
+        r.location !== role.location &&
+        (!role.relationship || r.location !== role.relationship.partnerLocation) &&
+        r.id !== role.id
       );
       
       if (availableServiceProviders.length > 0) {
@@ -175,28 +362,79 @@ export function generateRoles(playerCount, locationCount = 3, difficulty = 'medi
         const possibleNeeds = SERVICE_NEEDS[provider.profession];
         const specificNeed = possibleNeeds[Math.floor(Math.random() * possibleNeeds.length)];
         
-        roles[i].needs = provider.profession; // The profession that can help
-        roles[i].needsType = 'service';
-        roles[i].needsService = specificNeed; // The specific problem/situation
+        role.needs = provider.profession;
+        role.needsType = 'service';
+        role.needsService = specificNeed;
       } else {
-        // Fallback to item if no service providers available at different locations
-        roles[i].needs = assignItemNeed(roles[i], roles, usedItems);
-        roles[i].needsType = 'item';
+        // Fallback to item
+        role.needs = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+        role.needsType = 'item';
       }
     } else {
-      // Need an item
-      roles[i].needs = assignItemNeed(roles[i], roles, usedItems);
-      roles[i].needsType = 'item';
+      // Need an item at a DIFFERENT location from both role and relationship
+      role.needs = assignItemNeedWithTriangleComplexity(role, roles, usedItems);
+      role.needsType = 'item';
+    }
+  });
+  
+  // Assign critical first-round needs
+  assignCriticalFirstRoundNeeds(roles);
+}
+
+/**
+ * Assign item needs ensuring triangle complexity
+ */
+function assignItemNeedWithTriangleComplexity(person, roles, usedItems) {
+  let needsItem;
+  let attempts = 0;
+  const relationshipLocation = person.relationship ? person.relationship.partnerLocation : null;
+  
+  do {
+    needsItem = usedItems[Math.floor(Math.random() * usedItems.length)];
+    attempts++;
+    
+    const itemLocation = roles.find(r => r.has === needsItem)?.location;
+    
+    // Item must be at different location from person AND their relationship
+    const atPersonLocation = itemLocation === person.location;
+    const atRelationshipLocation = relationshipLocation && itemLocation === relationshipLocation;
+    
+    if (!atPersonLocation && !atRelationshipLocation) {
+      break;
+    }
+  } while (attempts < 50);
+  
+  return needsItem || usedItems[0];
+}
+
+/**
+ * Assign critical first-round needs to non-critical players
+ * These MUST be completed in Round 1
+ */
+function assignCriticalFirstRoundNeeds(roles) {
+  const criticalSkillProviders = roles.filter(r => r.isCriticalFirstRound);
+  const nonCriticalPlayers = roles.filter(r => !r.isCriticalFirstRound);
+  
+  // Give at least half of non-critical players a critical first-round need
+  const needCriticalCount = Math.floor(nonCriticalPlayers.length / 2);
+  
+  for (let i = 0; i < needCriticalCount && i < nonCriticalPlayers.length; i++) {
+    const player = nonCriticalPlayers[i];
+    
+    // Find a critical skill provider at a different location
+    const availableProviders = criticalSkillProviders.filter(p => 
+      p.location !== player.location &&
+      (!player.relationship || p.location !== player.relationship.partnerLocation)
+    );
+    
+    if (availableProviders.length > 0) {
+      const provider = availableProviders[Math.floor(Math.random() * availableProviders.length)];
+      player.needs = provider.profession;
+      player.needsType = 'service';
+      player.needsService = CRITICAL_FIRST_ROUND_SKILLS[provider.profession];
+      player.needsCriticalFirstRound = true;
     }
   }
-
-  // Step 4: Add personal relationships (spouse, family, etc.) - creates emotional dilemmas
-  addPersonalRelationships(roles, locationCount);
-
-  // Step 5: Add strategic dilemmas - make critical roles needed by multiple people
-  addStrategicDilemmas(roles);
-
-  return roles;
 }
 
 /**
@@ -220,176 +458,6 @@ function assignItemNeed(person, roles, usedItems) {
   }
   
   return needsItem;
-}
-
-/**
- * Add personal relationships (family, spouse, etc.) to create emotional dilemmas
- * These relationships force players to choose between duty and family
- * 
- * COMPLEXITY CONSTRAINT - Triangle Pattern:
- * If person at Location A has:
- *   - A need (item/service) at Location B
- *   - A relationship at Location C (NOT A, NOT B)
- * This ensures maximum complexity - can't solve everything by going to one location
- * 
- * Example:
- *   - Doctor at Location 1 needs Insulin (at Location 2) and spouse is at Location 3
- *   - Must choose: Go to Location 2 for insulin OR Location 3 for spouse
- */
-function addPersonalRelationships(roles, locationCount) {
-  // Only create relationships if we have enough players and locations
-  if (roles.length < 6 || locationCount < 2) return;
-  
-  const relationshipsToCreate = Math.floor(roles.length / 4); // About 25% of players have relationships
-  const usedInRelationship = new Set();
-  
-  for (let i = 0; i < relationshipsToCreate; i++) {
-    // Find two people who:
-    // 1. Aren't already in a relationship
-    // 2. Are at DIFFERENT locations
-    // 3. Preferably include at least one critical role (for dilemma impact)
-    
-    const availablePeople = roles.filter(r => 
-      !usedInRelationship.has(r.id)
-    );
-    
-    if (availablePeople.length < 2) break;
-    
-    // Prioritize critical roles for relationships (creates better dilemmas)
-    let person1 = availablePeople.find(r => r.priority === 'high') || 
-                  availablePeople[Math.floor(Math.random() * availablePeople.length)];
-    
-    // Find the location where person1's need is (item or service provider)
-    let person1NeedLocation = null;
-    if (person1.needsType === 'item') {
-      // Find where the needed item is located
-      const itemHolder = roles.find(r => r.has === person1.needs);
-      if (itemHolder) person1NeedLocation = itemHolder.location;
-    } else if (person1.needsType === 'service') {
-      // Find where the service provider is located
-      const serviceProvider = roles.find(r => r.profession === person1.needs);
-      if (serviceProvider) person1NeedLocation = serviceProvider.location;
-    }
-    
-    // Find person at different location from BOTH person1 AND their need
-    // This creates a triangle: Person at A, Need at B, Relationship at C
-    // ALSO ensure person1 is not at the same location as person2's need
-    const availablePartners = availablePeople.filter(r => {
-      if (r.id === person1.id) return false;
-      if (r.location === person1.location) return false;
-      if (person1NeedLocation !== null && r.location === person1NeedLocation) return false;
-      
-      // Check if person1's location matches where person2's need is
-      let person2NeedLocation = null;
-      if (r.needsType === 'item') {
-        const itemHolder = roles.find(role => role.has === r.needs);
-        if (itemHolder) person2NeedLocation = itemHolder.location;
-      } else if (r.needsType === 'service') {
-        const serviceProvider = roles.find(role => role.profession === r.needs);
-        if (serviceProvider) person2NeedLocation = serviceProvider.location;
-      }
-      
-      // person1 should not be at the same location as person2's need
-      if (person2NeedLocation !== null && person1.location === person2NeedLocation) return false;
-      
-      return true;
-    });
-    
-    if (availablePartners.length === 0) continue;
-    
-    const person2 = availablePartners[Math.floor(Math.random() * availablePartners.length)];
-    
-    // Select relationship type
-    const relationship = RELATIONSHIP_TYPES[Math.floor(Math.random() * RELATIONSHIP_TYPES.length)];
-    
-    // Update their names to show relationship (matching last names)
-    const sharedLastName = person1.name.split(' ').pop();
-    
-    // For spouse and sibling relationships, share last name
-    if (relationship.type === 'Spouse' || relationship.type === 'Sibling') {
-      const firstName2 = person2.name.split(' ')[0];
-      person2.name = firstName2.includes('Dr.') || firstName2.includes('Officer') || firstName2.includes('Mayor')
-        ? person2.name.split(' ').slice(0, -1).join(' ') + ' ' + sharedLastName
-        : `${firstName2} ${sharedLastName}`;
-    }
-    
-    // For parent-child, child has parent's last name
-    if (relationship.type === 'Child' || relationship.type === 'Parent') {
-      if (relationship.type === 'Child') {
-        // person2 is the child
-        const firstName2 = person2.name.split(' ')[0];
-        person2.name = `${firstName2} ${sharedLastName}`;
-      } else {
-        // person1 is the child
-        const firstName1 = person1.name.split(' ')[0];
-        person1.name = `${firstName1} ${sharedLastName}`;
-      }
-    }
-    
-    // Add relationship to "alsoNeeds" field
-    if (!person1.alsoNeeds) person1.alsoNeeds = [];
-    if (!person2.alsoNeeds) person2.alsoNeeds = [];
-    
-    // Add reciprocal relationships
-    person1.alsoNeeds.push({
-      type: 'relationship',
-      relationshipType: relationship.type,
-      description: `${relationship.description} (${person2.name} @ Location ${person2.location})`,
-      targetId: person2.id,
-      priority: 'personal'
-    });
-    
-    // Add reciprocal relationship (opposite direction)
-    const reciprocalDesc = relationship.type === 'Child' ? 'Find parent' :
-                          relationship.type === 'Parent' ? 'Check on child' :
-                          relationship.type === 'Spouse' ? 'Find spouse' :
-                          relationship.type === 'Sibling' ? 'Find sibling' :
-                          'Check on close friend';
-    
-    person2.alsoNeeds.push({
-      type: 'relationship',
-      relationshipType: relationship.type,
-      description: `${reciprocalDesc} (${person1.name} @ Location ${person1.location})`,
-      targetId: person1.id,
-      priority: 'personal'
-    });
-    
-    usedInRelationship.add(person1.id);
-    usedInRelationship.add(person2.id);
-  }
-}
-
-/**
- * Add strategic dilemmas - make critical roles needed by multiple people
- */
-function addStrategicDilemmas(roles) {
-  const criticalRoles = roles.filter(r => r.priority === 'high' && SERVICE_NEEDS[r.profession]);
-  
-  criticalRoles.forEach(critical => {
-    // Find players who might need this critical role's service
-    const potentialNeeders = roles.filter(r => 
-      r.id !== critical.id && 
-      r.location !== critical.location &&
-      r.needs !== critical.profession // Don't duplicate if already needs this service
-    );
-    
-    if (potentialNeeders.length > 0 && Math.random() > 0.6) {
-      // Make 1 additional person need this critical role (creating competition)
-      const needer = potentialNeeders[Math.floor(Math.random() * potentialNeeders.length)];
-      const possibleNeeds = SERVICE_NEEDS[critical.profession];
-      const specificNeed = possibleNeeds[Math.floor(Math.random() * possibleNeeds.length)];
-      
-      // Add an "also needs" field to create dilemma
-      if (!needer.alsoNeeds) {
-        needer.alsoNeeds = [];
-      }
-      needer.alsoNeeds.push({
-        profession: critical.profession,
-        service: specificNeed,
-        priority: 'urgent'
-      });
-    }
-  });
 }
 
 /**
@@ -507,7 +575,7 @@ export function validateRoles(roles) {
   
   // Check 5: Triangle complexity - relationships should not be at same location as needs
   roles.forEach(role => {
-    if (role.alsoNeeds && role.alsoNeeds.length > 0) {
+    if (role.relationship) {
       // Find role's need location
       let needLocation = null;
       if (role.needsType === 'item') {
@@ -518,20 +586,24 @@ export function validateRoles(roles) {
         if (serviceProvider) needLocation = serviceProvider.location;
       }
       
-      // Check each relationship
-      role.alsoNeeds.forEach(alsoNeed => {
-        if (alsoNeed.type === 'relationship' && alsoNeed.targetId !== undefined) {
-          const relatedPerson = roles.find(r => r.id === alsoNeed.targetId);
-          if (relatedPerson) {
-            // Relationship should not be at same location as need (triangle constraint)
-            if (needLocation !== null && relatedPerson.location === needLocation) {
-              issues.push(`${role.name} has relationship and need at same location ${needLocation} - breaks triangle complexity`);
-            }
-          }
-        }
-      });
+      // Relationship should not be at same location as need (triangle constraint)
+      if (needLocation !== null && role.relationship.partnerLocation === needLocation) {
+        issues.push(`${role.name} has relationship and need at same location ${needLocation} - breaks triangle complexity`);
+      }
     }
   });
+  
+  // Check 6: Everyone should have a relationship
+  const unrelatedPeople = roles.filter(r => !r.relationship);
+  if (unrelatedPeople.length > 0) {
+    issues.push(`${unrelatedPeople.length} people have no relationships - everyone should be paired`);
+  }
+  
+  // Check 7: Net Control Operators assigned
+  const nccCount = roles.filter(r => r.nccRound !== null).length;
+  if (nccCount !== 3) {
+    issues.push(`Should have 3 Net Control Operators (one per round), found ${nccCount}`);
+  }
   
   return {
     valid: issues.length === 0,
